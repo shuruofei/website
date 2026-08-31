@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}修改密码{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-birch-light/60 to-tech-light/40 flex items-center justify-center px-4 py-20">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-10 fade-up">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-birch-dark text-birch-light flex items-center justify-center mb-4 shadow-lg">
+                <i class="fas fa-key text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-800">修改密码</h2>
+            <p class="text-gray-400 text-sm mt-1">当前账号：{{ user.username }}</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm font-bold text-gray-600">原密码</label>
+                <input id="old-password" type="password" class="w-full mt-1.5 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-birch-accent/40" placeholder="请输入当前密码">
+            </div>
+            <div>
+                <label class="text-sm font-bold text-gray-600">新密码</label>
+                <input id="new-password" type="password" class="w-full mt-1.5 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-birch-accent/40" placeholder="至少 6 位">
+            </div>
+            <div>
+                <label class="text-sm font-bold text-gray-600">确认新密码</label>
+                <input id="new-password2" type="password" class="w-full mt-1.5 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-birch-accent/40" placeholder="再次输入新密码" onkeypress="if(event.key==='Enter') doChangePassword()">
+            </div>
+            <p id="pwd-error" class="hidden text-sm text-rose-500 bg-rose-50 rounded-lg px-3 py-2"></p>
+            <p id="pwd-success" class="hidden text-sm text-emerald-600 bg-emerald-50 rounded-lg px-3 py-2"></p>
+            <button onclick="doChangePassword()" id="pwd-btn"
+                    class="w-full bg-birch-dark text-birch-light py-3.5 rounded-xl font-bold hover:bg-birch-accent transition shadow-md">
+                确认修改
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function doChangePassword() {
+    const oldPwd = document.getElementById('old-password').value;
+    const newPwd = document.getElementById('new-password').value;
+    const newPwd2 = document.getElementById('new-password2').value;
+    const err = document.getElementById('pwd-error');
+    const ok = document.getElementById('pwd-success');
+    err.classList.add('hidden');
+    ok.classList.add('hidden');
+    if (!oldPwd || !newPwd) {
+        err.textContent = '请填写原密码和新密码';
+        err.classList.remove('hidden');
+        return;
+    }
+    if (newPwd !== newPwd2) {
+        err.textContent = '两次输入的新密码不一致';
+        err.classList.remove('hidden');
+        return;
+    }
+    const btn = document.getElementById('pwd-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+    const resp = await fetch('/api/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ old_password: oldPwd, new_password: newPwd }),
+    });
+    const data = await resp.json();
+    btn.disabled = false;
+    btn.innerText = '确认修改';
+    if (data.ok) {
+        ok.textContent = '✓ 密码修改成功，请牢记新密码';
+        ok.classList.remove('hidden');
+        ['old-password', 'new-password', 'new-password2'].forEach(id => document.getElementById(id).value = '');
+    } else {
+        err.textContent = data.msg || '修改失败';
+        err.classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}

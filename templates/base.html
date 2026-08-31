@@ -50,6 +50,7 @@
                     {% if user.is_admin %}
                     <a href="/admin" class="text-amber-700 hover:text-amber-900 font-medium"><i class="fas fa-shield-alt mr-1"></i>管理</a>
                     {% endif %}
+                    <a href="/account" class="text-gray-500 hover:text-tech-blue font-medium"><i class="fas fa-key mr-1"></i>改密</a>
                     <span class="text-gray-500"><i class="fas fa-user-circle mr-1 text-tech-blue"></i>{{ user.username }}</span>
                     <button onclick="logout()" class="px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">退出</button>
                 {% else %}
@@ -71,6 +72,7 @@
                 {% if user %}
                     <span class="text-gray-500"><i class="fas fa-user-circle mr-1 text-tech-blue"></i>{{ user.username }}</span>
                     {% if user.is_admin %}<a href="/admin" class="text-amber-700 font-medium">管理面板</a>{% endif %}
+                    <a href="/account" class="text-tech-blue font-medium">修改密码</a>
                     <button onclick="logout()" class="px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">退出</button>
                 {% else %}
                     <a href="/login" class="flex-1 text-center px-4 py-2 rounded-full text-tech-blue border border-tech-blue/40">登录</a>

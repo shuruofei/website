@@ -226,6 +226,13 @@ def admin_page():
     return render_template("admin.html")
 
 
+@app.route("/account")
+def account_page():
+    if not current_user():
+        return redirect(url_for("login_page"))
+    return render_template("account.html")
+
+
 # ---------- 图片/上传文件服务 ----------
 @app.route("/img/<path:filename>")
 def serve_image(filename):
@@ -271,6 +278,25 @@ def api_login():
 @app.route("/api/logout", methods=["POST"])
 def api_logout():
     session.pop("uid", None)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/password", methods=["POST"])
+@login_required
+def api_password_change():
+    data = request.get_json(silent=True) or {}
+    u = current_user()
+    if not check_password_hash(u["password_hash"], data.get("old_password") or ""):
+        return jsonify({"ok": False, "msg": "原密码不正确"})
+    new_password = data.get("new_password") or ""
+    if len(new_password) < 6:
+        return jsonify({"ok": False, "msg": "新密码至少 6 位"})
+    if new_password == data.get("old_password"):
+        return jsonify({"ok": False, "msg": "新密码不能与原密码相同"})
+    db = get_db()
+    db.execute("UPDATE users SET password_hash=? WHERE id=?",
+               (generate_password_hash(new_password), u["id"]))
+    db.commit()
     return jsonify({"ok": True})
 
 
