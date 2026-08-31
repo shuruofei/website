@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}桦艺新生{% endblock %} - 桦树皮画数字体验平台</title>
+    <script src="{{ url_for('static', filename='vendor/tailwind.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: {
+                birch: { light:'#f9f3e9', DEFAULT:'#e8dfce', dark:'#5e4229', accent:'#7a5b3c' },
+                tech: { blue:'#0284c7', light:'#e0f2fe' }
+            }}}
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="text-gray-800 antialiased overflow-x-hidden bg-white">
+
+    <!-- 顶部导航 -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center gap-2 flex-shrink-0">
+                <span class="w-9 h-9 rounded-xl bg-birch-dark text-birch-light flex items-center justify-center font-bold">桦</span>
+                <span class="font-extrabold text-lg text-birch-dark tracking-wider hidden sm:inline">桦艺新生</span>
+            </a>
+
+            <div class="hidden lg:flex items-center gap-1 text-sm font-medium">
+                {% set links = [
+                    ('/', '首页', 'index'),
+                    ('/timeline', '时间轴', 'timeline'),
+                    ('/craft', '工艺', 'craft'),
+                    ('/inheritors', '传承人', 'inheritors'),
+                    ('/culture', '民族图谱', 'culture'),
+                    ('/gallery', '展馆', 'gallery'),
+                    ('/ar', 'AR试贴', 'ar'),
+                    ('/ai', 'AI问答', 'ai'),
+                    ('/quiz', '问答挑战', 'quiz'),
+                    ('/material', '素材库', 'material'),
+                    ('/about', '关于·留言', 'about'),
+                ] %}
+                {% for href, label, ep in links %}
+                <a href="{{ href }}" class="px-3 py-2 rounded-lg transition hover:bg-birch-light hover:text-birch-dark {% if request.endpoint == ep %}text-birch-dark bg-birch-light font-bold{% else %}text-gray-600{% endif %}">{{ label }}</a>
+                {% endfor %}
+            </div>
+
+            <div class="hidden lg:flex items-center gap-3 text-sm">
+                {% if user %}
+                    {% if user.is_admin %}
+                    <a href="/admin" class="text-amber-700 hover:text-amber-900 font-medium"><i class="fas fa-shield-alt mr-1"></i>管理</a>
+                    {% endif %}
+                    <span class="text-gray-500"><i class="fas fa-user-circle mr-1 text-tech-blue"></i>{{ user.username }}</span>
+                    <button onclick="logout()" class="px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 text-gray-600">退出</button>
+                {% else %}
+                    <a href="/login" class="px-4 py-1.5 rounded-full text-tech-blue border border-tech-blue/40 hover:bg-tech-light">登录</a>
+                    <a href="/register" class="px-4 py-1.5 rounded-full bg-tech-blue text-white hover:bg-blue-700">注册</a>
+                {% endif %}
+            </div>
+
+            <button id="nav-toggle" class="lg:hidden text-2xl text-birch-dark w-10 h-10"><i class="fas fa-bars"></i></button>
+        </nav>
+
+        <div id="nav-mobile" class="hidden lg:hidden border-t border-gray-100 bg-white max-h-[70vh] overflow-y-auto">
+            <div class="px-4 py-3 grid grid-cols-2 gap-1 text-sm font-medium">
+                {% for href, label, ep in links %}
+                <a href="{{ href }}" class="px-3 py-2.5 rounded-lg text-gray-700 hover:bg-birch-light">{{ label }}</a>
+                {% endfor %}
+            </div>
+            <div class="px-4 pb-4 flex items-center gap-3 text-sm border-t border-gray-100 pt-3">
+                {% if user %}
+                    <span class="text-gray-500"><i class="fas fa-user-circle mr-1 text-tech-blue"></i>{{ user.username }}</span>
+                    {% if user.is_admin %}<a href="/admin" class="text-amber-700 font-medium">管理面板</a>{% endif %}
+                    <button onclick="logout()" class="px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">退出</button>
+                {% else %}
+                    <a href="/login" class="flex-1 text-center px-4 py-2 rounded-full text-tech-blue border border-tech-blue/40">登录</a>
+                    <a href="/register" class="flex-1 text-center px-4 py-2 rounded-full bg-tech-blue text-white">注册</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-16 min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-birch-dark text-birch-light/80">
+        <div class="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+            <div>
+                <h4 class="text-birch-light font-bold text-lg mb-3">桦艺新生</h4>
+                <p class="leading-relaxed">以数字技术守护国家级非遗（编号 Ⅷ-83）桦树皮画，让北方森林民族的古老技艺在数字时代焕发新生。</p>
+            </div>
+            <div>
+                <h4 class="text-birch-light font-bold mb-3">快速导航</h4>
+                <div class="grid grid-cols-2 gap-1">
+                    <a href="/timeline" class="hover:text-white py-0.5">千年时间轴</a>
+                    <a href="/craft" class="hover:text-white py-0.5">工艺详解</a>
+                    <a href="/inheritors" class="hover:text-white py-0.5">传承人故事</a>
+                    <a href="/culture" class="hover:text-white py-0.5">民族图谱</a>
+                    <a href="/gallery" class="hover:text-white py-0.5">数字展馆</a>
+                    <a href="/material" class="hover:text-white py-0.5">素材共创库</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-birch-light font-bold mb-3">联系我们</h4>
+                <p class="py-0.5"><i class="fas fa-envelope mr-2"></i>hrbust_huashupihua@qq.com</p>
+                <p class="py-0.5"><i class="fas fa-map-marker-alt mr-2"></i>哈尔滨理工大学 · 创新创业中心</p>
+                <p class="py-0.5"><i class="fas fa-flag mr-2"></i>2026 大学生创新创业训练计划项目</p>
+            </div>
+        </div>
+        <p class="text-center text-xs text-birch-light/40 pb-6">© {{ year }} 桦艺新生大创团队 | 桦树皮画数字保护中心 · 保留所有权利</p>
+    </footer>
+
+    <div id="scroll-to-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+         class="fixed right-6 bottom-6 z-40 flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur rounded-full shadow-lg cursor-pointer transition-all duration-300 opacity-0 translate-y-10 pointer-events-none hover:shadow-xl hover:scale-110">
+        <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+            <circle cx="24" cy="24" r="20" stroke="#f3f4f6" stroke-width="3" fill="none"></circle>
+            <circle id="scroll-progress-circle" cx="24" cy="24" r="20" stroke="#0284c7" stroke-width="3" fill="none" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round"></circle>
+        </svg>
+        <i class="fas fa-arrow-up text-tech-blue relative z-10"></i>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>window.CURRENT_USER = {{ (user or none)|tojson }};</script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

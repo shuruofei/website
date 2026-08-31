@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}工艺详解{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-birch-light to-white min-h-screen pt-14 pb-20">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="text-center mb-16 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-birch-dark mb-4">四步匠心 · 工艺详解</h2>
+            <p class="text-gray-600 text-lg">以树皮为纸，以火为墨。每一步都是人与森林的对话。</p>
+        </div>
+
+        {% set steps = [
+            ('fas fa-tree', '自然采集 · 敬畏的起点', '选材',
+             ['并非所有桦树都能作画：匠人深入林区，寻找二三十年以上树龄的白桦——树皮厚度适中、层次丰富、柔韧不易开裂。',
+              '剥皮时机严格限定在每年农历五月底六月初至立秋前，此时树液流动旺盛，树皮与木质层自然分离，剥取不伤树。',
+              '最核心的规矩：只取外皮，绝不伤及形成层（木质层）。数年后白桦可重新长出新皮，生生不息——这是北方民族"取之有度"的森林伦理。']),
+            ('fas fa-fire-alt', '熟化处理 · 去粗存精', '熟化',
+             ['新鲜桦皮需入锅水煮，高温脱脂提纯，去除涩味与杂质；',
+              '随后以重物压平、通风阴干，剥去表面粗糙老皮，暴露出细腻平滑的内层——一张柔韧的天然"画布"就此诞生。',
+              '熟化不足的树皮易卷曲开裂，这一步决定了画作能否保存数十年。']),
+            ('fas fa-eye', '相皮构图 · 因势象形', '相皮',
+             ['匠人行话"相皮"：观察每块树皮天然的结节、斑点、白霜与暗红色晕，让自然纹理参与构图。',
+              '树结可化作鹿眼，节疤可成为山石，色斑即是秋林——"虽由人作，宛自天开"。',
+              '这是桦树皮画区别于其他画种的核心：天然肌理不是被覆盖的底子，而是画面本身。']),
+            ('fas fa-cut', '剪刻拼贴 · 立体成形', '剪刻',
+             ['依构思将不同色阶的树皮剪刻成远山、近水、人物、驯鹿等元素；',
+              '通过多层叠加拼贴，打破平面画的二维限制，形成 2.5D 的空间纵深感——近景深、中景褐、远景浅，层层递进。',
+              '传统桦皮器物上的装饰多用砸压与剪贴手法，象征吉祥、喜庆、平安、丰收的图形被赋予其中。']),
+            ('fas fa-fire', '烙烫修饰 · 以火为墨', '烙烫',
+             ['匠人以特制电烙铁在不同温度下于树皮表面烫烙——高温深褐、低温浅黄，碳化程度的差异就是"墨分五色"。',
+              '烫出山体的光影过渡、鹿毛的细腻质感、水面的粼粼波光，赋予画面灵魂。',
+              '全程不使用任何化学颜料，画面色彩纯靠树皮本色与火的艺术，历久弥新。']),
+        ] %}
+
+        {% for icon, title, tag, points in steps %}
+        <div class="mb-10 bg-white rounded-3xl shadow-lg border border-birch overflow-hidden scroll-bounce">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="bg-birch-dark text-birch-light p-8 flex flex-col items-center justify-center text-center">
+                    <i class="fas {{ icon }} text-5xl mb-4 text-amber-400"></i>
+                    <span class="text-xs tracking-[.3em] opacity-60 mb-2">STEP {{ loop.index }}</span>
+                    <h3 class="text-2xl font-bold">{{ title.split(' · ')[0] }}</h3>
+                    <p class="text-birch-DEFAULT text-sm mt-2 opacity-80">{{ title.split(' · ')[1] }}</p>
+                </div>
+                <div class="md:col-span-2 p-8">
+                    <span class="inline-block text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full mb-4">匠人术语 · {{ tag }}</span>
+                    <ul class="space-y-3 text-gray-600 leading-relaxed">
+                        {% for p in points %}<li class="flex gap-2"><i class="fas fa-check text-amber-600 mt-1.5 text-xs"></i><span>{{ p }}</span></li>{% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="bg-gradient-to-r from-emerald-50 to-birch-light rounded-3xl p-8 border border-emerald-200 scroll-bounce">
+            <h3 class="text-xl font-bold text-emerald-800 mb-4 flex items-center gap-2"><i class="fas fa-leaf"></i> 生态冷知识</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                <div class="bg-white/70 rounded-xl p-4"><strong class="block text-emerald-700 mb-1">桦皮可再生</strong>只要不伤形成层，同一棵白桦每隔数年可再剥一次，是真正的可再生"画材"。</div>
+                <div class="bg-white/70 rounded-xl p-4"><strong class="block text-emerald-700 mb-1">零化学添加</strong>从树皮到成画，不使用一滴颜料与胶水（现代装裱除外），色彩全部来自自然与火。</div>
+                <div class="bg-white/70 rounded-xl p-4"><strong class="block text-emerald-700 mb-1">轻若纸、韧若革</strong>桦皮器具轻便防水抗腐蚀，曾是森林民族的船、碗、篓、箱，"陆行载于马上，遇水用之以渡"。</div>
+            </div>
+        </div>
+
+        <div class="text-center mt-10 scroll-bounce">
+            <a href="/quiz" class="inline-flex items-center gap-2 bg-birch-dark text-white px-8 py-3 rounded-full font-bold hover:bg-birch-accent transition">
+                学完了？来测测你的掌握度 <i class="fas fa-trophy"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

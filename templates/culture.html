@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}民族文化图谱{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-emerald-50/60 to-white min-h-screen pt-14 pb-20">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-16 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-emerald-900 mb-4">桦皮上的民族图谱</h2>
+            <p class="text-gray-600 text-lg">桦树皮文化主要流传于鄂伦春、鄂温克、达斡尔及黑龙江流域的赫哲族聚居区——四支森林民族，共同书写"白桦文明"。</p>
+        </div>
+
+        {% set peoples = [
+            ('鄂伦春族', '山岭上的人', 'emerald',
+             '大兴安岭 · 内蒙古鄂伦春自治旗 / 黑龙江',
+             ['自称"山岭上的人"，世代游猎于兴安岭密林，桦皮船、狍皮衣是其渔猎文化的两大标志。',
+              '桦皮船"奥木鲁钦"轻若鸿羽，一人即可背负迁徙；2008 年其制作技艺列入国家级非遗扩展项目。',
+              '狍皮制作技艺（Ⅷ-112）2008 年入选国家级非遗，与桦皮技艺并称鄂伦春"山林双绝"。']),
+            ('鄂温克族', '住在大山林中的人们', 'sky',
+             '根河市敖鲁古雅乡 · 使鹿部落',
+             ['"鄂温克"意为"住在大山林中的人们"，其中敖鲁古雅使鹿部落是中国最后的驯鹿部落。',
+              '驯鹿迁徙途中，桦皮箱篓是驮载家当的容器；桦皮帐篷"撮罗子"曾是他们移动的家。',
+              '桦皮器物上的驯鹿纹样，记录着人与鹿群相依千年的森林史诗。']),
+            ('赫哲族', '江上渔猎的民族', 'rose',
+             '黑龙江 · 松花江 · 乌苏里江 三江流域',
+             ['世代以渔猎为生，以鱼皮衣著称——鱼皮制作技艺（Ⅷ-85）与桦皮技艺同列首批国家级非遗。',
+              '桦皮船是他们夏季江上捕鱼的轻舟，与赫哲族伊玛堪说唱（世界级非遗）共同构成三江文化。',
+              '首批国家级传承人付占祥即来自黑龙江饶河的赫哲族聚居区。']),
+            ('达斡尔族', '开拓的农猎民族', 'amber',
+             '内蒙古莫力达瓦 · 嫩江流域',
+             ['由狩猎转向农猎并作的民族，桦皮器物长期服务于采集与渔猎生活。',
+              '桦皮篓、桦皮桶曾是大兴安岭东麓家家户户的日常容器。',
+              '其民间美术中的卷云纹、吉祥纹样，也被融入桦皮器物的砸压装饰。']),
+        ] %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {% for name, meaning, color, region, points in peoples %}
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden scroll-bounce" style="transition-delay: {{ loop.index0 * 100 }}ms">
+                <div class="bg-{{ color }}-600 p-6 text-white relative overflow-hidden">
+                    <i class="fas fa-mountain absolute -right-2 -bottom-4 text-8xl opacity-20"></i>
+                    <h3 class="text-2xl font-extrabold">{{ name }}</h3>
+                    <p class="text-sm opacity-90 mt-1">"{{ meaning }}"</p>
+                    <p class="text-xs mt-2 opacity-80"><i class="fas fa-map-marker-alt mr-1"></i>{{ region }}</p>
+                </div>
+                <ul class="p-6 space-y-3 text-sm text-gray-600 leading-relaxed">
+                    {% for p in points %}<li class="flex gap-2"><i class="fas fa-circle text-{{ color }}-500 mt-1.5 text-[5px]"></i><span>{{ p }}</span></li>{% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 信仰内核 -->
+        <div class="mt-12 bg-birch-dark rounded-3xl p-10 text-birch-light relative overflow-hidden scroll-bounce">
+            <div class="absolute right-0 top-0 opacity-10 pointer-events-none"><i class="fas fa-spa text-[14rem]"></i></div>
+            <h3 class="text-2xl font-bold text-amber-400 mb-5 relative z-10"><i class="fas fa-fire mr-2"></i>共同的精神内核：万物有灵</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm leading-relaxed relative z-10">
+                <p>这些森林民族普遍信仰萨满教，相信山川、树木、动物皆有灵性。白桦被视为"神树"，剥皮前祝祷、取用有度——桦皮画中的山神、鹿灵、日月图腾，正是这种自然崇拜的视觉表达。</p>
+                <p>对他们而言，桦皮器具不只是"用品"，更是与森林签订的一份古老契约：森林慷慨给予，人们心怀敬畏。这份生态智慧，恰是当代可持续发展理念在千年前的地方性表达。</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-10 scroll-bounce">
+            <a href="/gallery" class="inline-flex items-center gap-2 bg-emerald-700 text-white px-8 py-3 rounded-full font-bold hover:bg-emerald-800 transition">
+                在画作中寻找这些民族的生活 <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

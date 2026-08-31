@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}AR 试贴体验{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-indigo-50 to-white min-h-screen pt-14 pb-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-purple-800 mb-5 tracking-widest">
+                <i class="fas fa-vr-cardboard mr-3"></i>AR 桦艺试贴空间
+            </h2>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+                打破虚拟与现实的边界：打开摄像头，把桦树皮画"贴"到你的书桌、墙面、手心——
+                拖动移动、双指缩放、一键截图保存。
+            </p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-4 mb-8 scroll-bounce">
+            <a href="{{ ar_url }}" target="_blank" rel="noopener"
+               class="inline-flex items-center gap-2 bg-purple-600 text-white px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-purple-700 hover:-translate-y-0.5 transition">
+                <i class="fas fa-rocket"></i>全屏打开 AR（推荐手机使用）
+            </a>
+            <a href="{{ ar_url }}" target="_blank" rel="noopener"
+               class="inline-flex items-center gap-2 border-2 border-purple-300 text-purple-700 px-8 py-3.5 rounded-full font-bold hover:bg-purple-50 transition">
+                <i class="fas fa-external-link-alt"></i>新标签页体验
+            </a>
+        </div>
+
+        <div class="rounded-3xl overflow-hidden shadow-2xl border border-purple-100 bg-white scroll-bounce">
+            <div class="bg-purple-700 text-white px-5 py-3 flex items-center justify-between text-sm">
+                <span class="font-bold"><i class="fas fa-camera mr-2"></i>AR 实时画面（点击画面内"开始"授权摄像头）</span>
+                <span class="hidden sm:inline opacity-70"><i class="fas fa-expand mr-1"></i>右上角可全屏</span>
+            </div>
+            <iframe src="{{ ar_url }}" allow="camera; fullscreen; autoplay" allowfullscreen
+                    class="w-full h-[70vh] border-0 block"></iframe>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 scroll-bounce">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-purple-100 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                    <i class="fas fa-hand-pointer text-2xl text-purple-600"></i>
+                </div>
+                <h4 class="font-bold text-gray-800 mb-2">拖动 · 摆放</h4>
+                <p class="text-sm text-gray-500">按住艺术品可拖到画面任意位置，像贴纸一样随心摆放。</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-purple-100 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                    <i class="fas fa-search-plus text-2xl text-purple-600"></i>
+                </div>
+                <h4 class="font-bold text-gray-800 mb-2">双指 · 缩放</h4>
+                <p class="text-sm text-gray-500">双指捏合调整大小远近，双击可快速复位。</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-purple-100 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                    <i class="fas fa-camera-retro text-2xl text-purple-600"></i>
+                </div>
+                <h4 class="font-bold text-gray-800 mb-2">一键 · 留存</h4>
+                <p class="text-sm text-gray-500">截图合成摄像头画面与艺术品，直接保存到相册。</p>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-sm text-amber-800 scroll-bounce">
+            <p><i class="fas fa-lightbulb mr-2"></i><strong>小提示：</strong>浏览器会请求摄像头权限，请选择"允许"；
+            需使用 HTTPS 网址访问（本页嵌入的即是已部署的在线版本）。若在微信内打开受限，请选择系统浏览器继续。</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

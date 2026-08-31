@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桦艺新生 - 桦树皮画数字体验平台</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        birch: {
+                            light: '#f9f3e9', 
+                            DEFAULT: '#e8dfce', 
+                            dark: '#5e4229', 
+                            accent: '#7a5b3c', 
+                        },
+                        tech: {
+                            blue: '#0284c7', 
+                            light: '#e0f2fe'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; font-family: 'Microsoft YaHei', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .bg-texture {
+            background-color: #f9f3e9;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8dfce' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .scene { width: 200px; height: 200px; perspective: 800px; margin: 2rem auto; position: relative; z-index: 10; }
+        .cube { 
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: rotateX(-15deg) rotateY(20deg); cursor: grab; 
+            touch-action: none; 
+        }
+        .cube:active { cursor: grabbing; }
+
+        .face {
+            position: absolute; width: 200px; height: 200px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #0284c7; 
+            box-shadow: 0 0 15px rgba(2, 132, 199, 0.15);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 1.25rem; font-weight: bold; color: #0284c7; 
+            transition: background 0.3s, box-shadow 0.3s; 
+            overflow: hidden; -webkit-user-drag: none; cursor: pointer;
+        }
+
+        .face:hover { background: #f0f9ff; box-shadow: 0 0 30px rgba(2, 132, 199, 0.4); }
+        .face img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.1; z-index: -1; pointer-events: none; transition: opacity 0.3s; }
+        .face:hover img { opacity: 0.2; }
+
+        .front  { transform: rotateY(  0deg) translateZ(100px); }
+        .right  { transform: rotateY( 90deg) translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX( 90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+        .page-view:not(.active) { display: none !important; }
+        .page-view.active { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #10b981;
+            box-shadow: 0 0 10px #10b981, 0 0 20px #10b981; animation: scan 2s infinite linear;
+        }
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        
+        .ar-grid-bg {
+            background-color: #f1f5f9;
+            background-image: linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .scroll-bounce {
+            opacity: 0; transform: scale(0.6) translateY(40px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .scroll-bounce.in-view {
+            opacity: 1; transform: scale(1) translateY(0);
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased overflow-x-hidden bg-white">
+
+    <button id="back-btn" onclick="goToPage('home')" class="hidden fixed top-6 left-6 z-50 bg-white/90 backdrop-blur border border-gray-200 text-birch-dark px-4 py-2 rounded-full shadow-lg hover:bg-birch-light hover:scale-105 transition flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> 返回主控中枢
+    </button>
+
+    <div id="scroll-to-top-btn" onclick="scrollToTop()" class="fixed right-6 bottom-6 z-50 flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur rounded-full shadow-lg cursor-pointer transition-all duration-300 opacity-0 translate-y-10 pointer-events-none hover:shadow-xl hover:scale-110 group">
+        <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+            <circle cx="24" cy="24" r="20" stroke="#f3f4f6" stroke-width="3" fill="none"></circle>
+            <circle id="scroll-progress-circle" cx="24" cy="24" r="20" stroke="#0284c7" stroke-width="3" fill="none" stroke-dasharray="125.6" stroke-dashoffset="125.6" stroke-linecap="round" class="transition-all duration-100 ease-out"></circle>
+        </svg>
+        <i class="fas fa-arrow-up text-tech-blue text-lg relative z-10 group-hover:-translate-y-1 transition-transform"></i>
+    </div>
+
+    <div id="page-home" class="page-view active min-h-screen flex flex-col items-center justify-center select-none pt-10 pb-10">
+        <canvas id="particle-canvas" class="absolute inset-0 z-0 pointer-events-none opacity-60"></canvas>
+        <div class="text-center mb-8 w-full relative z-10">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-tech-blue mb-4 tracking-widest drop-shadow-sm" style="text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);">
+                桦艺新生
+            </h1>
+            <h2 class="text-2xl md:text-3xl text-blue-900 font-bold mb-6 tracking-wide">
+                桦树皮画数字体验平台
+            </h2>
+            <p class="text-sm md:text-base text-gray-500 font-light tracking-widest max-w-3xl mx-auto px-4">
+                北方民族的传统艺术瑰宝 <span class="mx-2 text-tech-blue">|</span> 自然与人文的完美结合 <span class="mx-2 text-tech-blue">|</span> 数字化创新探索
+            </p>
+        </div>
+
+        <div class="scene">
+            <div class="cube" id="cube">
+                <div class="face front" onclick="goToPage('ar')">
+                    <i class="fas fa-vr-cardboard mb-3 text-4xl text-purple-600"></i>
+                    <span class="text-purple-700">AR 试贴体验</span>
+                </div>
+                <div class="face right" onclick="goToPage('ai')">
+                    <i class="fas fa-robot mb-3 text-4xl"></i>
+                    <span>AI 智能中枢</span>
+                </div>
+                <div class="face back" onclick="goToPage('gallery')">
+                    <i class="fas fa-image mb-3 text-4xl"></i>
+                    <span>全景视听展馆</span>
+                </div>
+                <div class="face left" onclick="goToPage('material')">
+                    <i class="fas fa-images mb-3 text-4xl text-emerald-600"></i>
+                    <span class="text-emerald-700">桦艺素材库</span>
+                </div>
+                <div class="face top" onclick="goToPage('creative')">
+                    <i class="fas fa-gift mb-3 text-4xl"></i>
+                    <span>现代衍生文创</span>
+                </div>
+                <div class="face bottom" onclick="goToPage('about')">
+                    <i class="fas fa-project-diagram mb-3 text-4xl"></i>
+                    <span>大创项目矩阵</span>
+                </div>
+            </div>
+        </div>
+        
+        <p class="relative z-10 text-gray-400 mt-12 animate-pulse inline-flex items-center justify-center gap-2 text-sm border border-gray-200 px-5 py-2.5 rounded-full shadow-sm bg-white">
+            <i class="fas fa-hand-pointer text-tech-blue"></i> 拨动魔方，点击进入对应独立模块
+        </p>
+    </div>
+
+    <div id="page-ar" class="page-view bg-gradient-to-br from-indigo-50 to-white min-h-screen pt-24 pb-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold text-purple-800 mb-6 tracking-widest">
+                    <i class="fas fa-vr-cardboard mr-3"></i>AR 桦艺试贴空间
+                </h2>
+                <p class="text-gray-600 text-xl max-w-3xl mx-auto leading-relaxed">
+                    打破虚拟与现实的边界。针对本期大创展示，我们设计了轻量化的 <strong class="text-purple-600">概念原型（Mockup）</strong>，扫码即可在手机端预览非遗数字模型跨端交互的底层逻辑。
+                </p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center justify-center gap-12 bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-purple-100">
+                <div class="w-full md:w-1/2 relative rounded-2xl overflow-hidden shadow-lg border border-gray-200 bg-gray-100">
+                    <div class="w-full h-80 ar-grid-bg opacity-80 relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent"></div>
+                    </div>
+                    <div class="scan-line"></div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-dashed border-green-500 rounded-lg flex items-center justify-center bg-green-400/20 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                        <i class="fas fa-cube text-5xl text-green-600 animate-bounce"></i>
+                    </div>
+                    <div class="absolute bottom-4 left-0 w-full text-center px-4">
+                        <span class="inline-block bg-black/70 text-white px-5 py-2.5 rounded-full text-xs md:text-sm backdrop-blur shadow-lg">平面识别成功，请放置模型</span>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/3 flex flex-col items-center text-center mt-8 md:mt-0">
+                    <div class="w-48 h-48 bg-white p-3 rounded-2xl shadow-inner border border-gray-100 flex items-center justify-center relative mb-6">
+                        <img src="https://i.ibb.co/v4Fvv4wG/AR.png" alt="概念原型演示码" class="w-full h-full object-cover rounded-xl shadow-sm border-2 border-purple-300">
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">手机扫码 预览原型</h3>
+                    <p class="text-gray-500 mb-6">体验大创概念设计与跨端交互逻辑</p>
+                    
+                    <button class="inline-flex bg-purple-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-purple-700 hover:shadow-xl transition hover:-translate-y-1 items-center justify-center gap-2 cursor-default">
+                        <i class="fas fa-rocket text-xl"></i> 下一阶段：研发微信原生版
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-ai" class="page-view bg-gray-50 h-[100dvh] overflow-hidden flex flex-col pt-20 pb-4">
+        <div class="max-w-4xl mx-auto w-full px-4 flex-1 flex flex-col min-h-0">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-extrabold text-tech-blue">
+                    <i class="fas fa-robot"></i> 桦艺 AI 大模型中枢
+                </h2>
+                <p class="text-gray-500 mt-2">大创项目核心研发：本地化知识库赋能的智能问答系统</p>
+            </div>
+            
+            <div class="flex-1 bg-white rounded-2xl shadow-xl border border-blue-100 flex flex-col overflow-hidden min-h-0">
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-tech-blue text-white flex items-center justify-center flex-shrink-0 shadow-md">
+                            <i class="fas fa-robot text-lg"></i>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow border border-gray-100 text-gray-700 leading-relaxed max-w-[80%]">
+                            您好！我是本次大创项目的核心技术成果 —— “桦艺 AI 助手”。您可以问我任何关于桦树皮画的历史、工艺、材料或文化问题。（您可以试着问我：“诞生于什么时候？”、“制作工艺有哪些？”）
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-white border-t border-gray-100">
+                    <div class="relative flex items-center">
+                        <input type="text" id="chat-input" placeholder="请在此输入您的问题..." class="w-full bg-gray-100 border-none rounded-full py-4 px-6 pr-16 focus:outline-none focus:ring-2 focus:ring-tech-blue transition text-gray-700" onkeypress="handleKeyPress(event)">
+                        <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-tech-blue text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition shadow-md">
+                            <i class="fas fa-paper-plane text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-gallery" class="page-view bg-birch-light bg-texture min-h-screen pt-24 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-bounce">
+                <h2 class="text-5xl font-bold text-birch-dark mb-4">全景视听数字展馆</h2>
+                <p class="text-gray-600 text-xl">沉浸式叙事：从历史源起到匠心技艺，再到光影留存。</p>
+            </div>
+            
+            <div class="mb-16 bg-white p-10 rounded-3xl shadow-xl border border-birch relative overflow-hidden scroll-bounce">
+                <div class="absolute right-0 top-0 opacity-5 pointer-events-none">
+                    <i class="fas fa-history text-[15rem]"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-birch-dark mb-6 flex items-center gap-3 border-b border-gray-100 pb-4 relative z-10">
+                    <i class="fas fa-scroll text-amber-700"></i> 篇章一：千年溯源
+                </h3>
+                <div class="space-y-4 text-gray-600 text-lg leading-relaxed relative z-10">
+                    <p><strong>起源雏形：</strong>桦树皮画起源于中国东北、内蒙古等地区。远古时期，北方游猎民族在利用桦树皮制作生活器具的过程中，逐渐在上面刻划狩猎图案，形成了雏形。</p>
+                    <p><strong>传承跨越：</strong>从隋唐时期的简单刻画，到明清时期剪刻、烫烙、雕刻的集大成，这门古老的手艺在2006年正式被列入第一批国家级非物质文化遗产代表性项目名录。</p>
+                </div>
+            </div>
+
+            <div class="mb-20 bg-white p-10 rounded-3xl shadow-xl border border-birch relative overflow-hidden scroll-bounce">
+                <div class="absolute left-0 bottom-0 opacity-5 pointer-events-none">
+                    <i class="fas fa-hammer text-[15rem]"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-birch-dark mb-8 flex items-center gap-3 border-b border-gray-100 pb-4 relative z-10">
+                    <i class="fas fa-hands text-amber-700"></i> 篇章二：四步匠心
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                    <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center">
+                        <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">1</div>
+                        <h4 class="text-xl font-bold text-birch-dark mb-2">自然采集</h4>
+                        <p class="text-gray-600">春末夏初，剥取最具韧性的白桦外皮。</p>
+                    </div>
+                    <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center">
+                        <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">2</div>
+                        <h4 class="text-xl font-bold text-birch-dark mb-2">熟化处理</h4>
+                        <p class="text-gray-600">水煮压平，去粗留精，获得柔韧画布。</p>
+                    </div>
+                    <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center">
+                        <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">3</div>
+                        <h4 class="text-xl font-bold text-birch-dark mb-2">顺势构图</h4>
+                        <p class="text-gray-600">依据天然结节与色彩，“相皮”定图。</p>
+                    </div>
+                    <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center">
+                        <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">4</div>
+                        <h4 class="text-xl font-bold text-birch-dark mb-2">烫刻创作</h4>
+                        <p class="text-gray-600">电烙铁高温烫烙，结合剪贴形成立体感。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-20">
+                <h3 class="text-3xl font-bold text-birch-dark mb-8 flex items-center justify-center gap-3 scroll-bounce">
+                    <i class="fas fa-image text-amber-700"></i> 篇章三：数字修复展出
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: 0ms;" onclick="openModal('https://i.ibb.co/rGSqVPpX/image.jpg', '骑马狩猎')">
+                        <div class="h-64 overflow-hidden"><img src="https://i.ibb.co/rGSqVPpX/image.jpg" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"></div>
+                        <div class="p-5 border-t border-birch flex justify-between items-center"><h3 class="text-xl font-bold text-birch-dark">骑马狩猎</h3><i class="fas fa-search-plus text-amber-600 opacity-0 group-hover:opacity-100 transition"></i></div>
+                    </div>
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: 100ms;" onclick="openModal('https://i.ibb.co/k6gYh1kN/image.png', '桦林狼影')">
+                        <div class="h-64 overflow-hidden"><img src="https://i.ibb.co/k6gYh1kN/image.png" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"></div>
+                        <div class="p-5 border-t border-birch flex justify-between items-center"><h3 class="text-xl font-bold text-birch-dark">桦林狼影</h3><i class="fas fa-search-plus text-amber-600 opacity-0 group-hover:opacity-100 transition"></i></div>
+                    </div>
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: 200ms;" onclick="openModal('https://i.ibb.co/8LnmgRmD/image.png', '使鹿部落')">
+                        <div class="h-64 overflow-hidden"><img src="https://i.ibb.co/8LnmgRmD/image.png" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"></div>
+                        <div class="p-5 border-t border-birch flex justify-between items-center"><h3 class="text-xl font-bold text-birch-dark">使鹿部落</h3><i class="fas fa-search-plus text-amber-600 opacity-0 group-hover:opacity-100 transition"></i></div>
+                    </div>
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: 0ms;" onclick="openModal('https://i.ibb.co/n8BxpRHj/image.png', '故乡白桦')">
+                        <div class="h-64 overflow-hidden"><img src="https://i.ibb.co/n8BxpRHj/image.png" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"></div>
+                        <div class="p-5 border-t border-birch flex justify-between items-center"><h3 class="text-xl font-bold text-birch-dark">故乡白桦</h3><i class="fas fa-search-plus text-amber-600 opacity-0 group-hover:opacity-100 transition"></i></div>
+                    </div>
+                    <div class="bg-white rounded-xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: 100ms;" onclick="openModal('https://i.ibb.co/M5Ss717f/image.jpg', '林深见鹿')">
+                        <div class="h-64 overflow-hidden"><img src="https://i.ibb.co/M5Ss717f/image.jpg" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"></div>
+                        <div class="p-5 border-t border-birch flex justify-between items-center"><h3 class="text-xl font-bold text-birch-dark">林深见鹿</h3><i class="fas fa-search-plus text-amber-600 opacity-0 group-hover:opacity-100 transition"></i></div>
+                    </div>
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: 200ms;" onclick="openModal('https://i.ibb.co/zTdVFvZq/image.jpg', '北方生活')">
+                        <div class="h-64 overflow-hidden"><img src="https://i.ibb.co/zTdVFvZq/image.jpg" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500"></div>
+                        <div class="p-5 border-t border-birch flex justify-between items-center"><h3 class="text-xl font-bold text-birch-dark">北方生活</h3><i class="fas fa-search-plus text-amber-600 opacity-0 group-hover:opacity-100 transition"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-birch-dark/20 pt-16">
+                <h3 class="text-3xl font-bold text-birch-dark mb-8 flex items-center justify-center gap-3 scroll-bounce">
+                    <i class="fas fa-film text-red-600"></i> 篇章四：多维光影纪录
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <a href="https://v.douyin.com/YEXMEsge6H4/" target="_blank" class="bg-gray-800 text-white rounded-3xl p-8 hover:bg-gray-700 transition shadow-xl flex flex-col items-center text-center group scroll-bounce" style="transition-delay: 0ms;">
+                        <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition"><i class="fab fa-tiktok"></i></div>
+                        <h4 class="text-xl font-bold mb-3">制作过程实拍</h4>
+                        <p class="text-gray-400 text-sm">直击匠人原生态纯手工创作全过程</p>
+                    </a>
+                    <a href="https://v.douyin.com/dsfcxpLEntQ/" target="_blank" class="bg-gray-800 text-white rounded-3xl p-8 hover:bg-gray-700 transition shadow-xl flex flex-col items-center text-center group scroll-bounce" style="transition-delay: 150ms;">
+                        <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition"><i class="fas fa-user-tie"></i></div>
+                        <h4 class="text-xl font-bold mb-3">传承人访谈</h4>
+                        <p class="text-gray-400 text-sm">听国家级非遗老手艺人讲述守望故事</p>
+                    </a>
+                    <a href="http://xhslink.com/o/6SyKhiiKcI3" target="_blank" class="bg-red-700 text-white rounded-3xl p-8 hover:bg-red-800 transition shadow-xl flex flex-col items-center text-center group scroll-bounce" style="transition-delay: 300ms;">
+                        <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition"><i class="fas fa-book-open"></i></div>
+                        <h4 class="text-xl font-bold mb-3">青年科普专栏</h4>
+                        <p class="text-gray-200 text-sm">图文并茂，以年轻人视角拆解非遗魅力</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-material" class="page-view bg-emerald-50/50 min-h-screen pt-24 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl md:text-5xl font-bold text-emerald-800 mb-4">
+                    <i class="fas fa-images mr-3"></i>桦树皮画素材共创库
+                </h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                    一个开放的非遗数字基因库。您可以在此提取高清纹理用于二次创作，也欢迎上传您的优质图片，与我们共同丰富大创素材库。
+                </p>
+            </div>
+            
+            <div class="mb-12">
+                <div class="bg-white border-4 border-dashed border-emerald-300 rounded-3xl p-10 text-center cursor-pointer hover:bg-emerald-50 transition shadow-sm group" onclick="document.getElementById('file-upload').click()">
+                    <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-emerald-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">点击或拖拽上传素材</h3>
+                    <p class="text-gray-500">支持 JPG, PNG 格式的高清树皮纹理或半成品照片</p>
+                    <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleFileUpload(event)">
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4">近期开源素材</h3>
+            <div id="material-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            </div>
+        </div>
+    </div>
+
+    <div id="page-creative" class="page-view bg-amber-50 min-h-screen pt-24 pb-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold text-amber-800 mb-6 tracking-widest">
+                <i class="fas fa-gift mr-2"></i> 现代衍生文创
+            </h2>
+            <p class="text-gray-600 mb-16 max-w-3xl mx-auto text-lg">大创项目落地成果：探索传统非遗与现代设计的结合，让古老艺术融入年轻人的日常生活。</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-amber-100 hover:-translate-y-2 transition">
+                    <div class="h-48 bg-amber-100 rounded-2xl mb-6 flex items-center justify-center text-amber-500 text-6xl"><i class="fas fa-bookmark"></i></div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">桦艺天然书签</h3>
+                    <p class="text-gray-500">采用边角余料制作的环保伴手礼</p>
+                </div>
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-amber-100 hover:-translate-y-2 transition">
+                    <div class="h-48 bg-amber-100 rounded-2xl mb-6 flex items-center justify-center text-amber-500 text-6xl"><i class="fas fa-lightbulb"></i></div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">树皮透光台灯</h3>
+                    <p class="text-gray-500">利用天然纹理打造的现代家居</p>
+                </div>
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-amber-100 hover:-translate-y-2 transition">
+                    <div class="h-48 bg-amber-100 rounded-2xl mb-6 flex items-center justify-center text-amber-500 text-6xl"><i class="fas fa-cubes"></i></div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3">非遗数字盲盒</h3>
+                    <p class="text-gray-500">结合数字资产发行的限量版文创</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-about" class="page-view bg-birch-dark text-birch-light min-h-screen pt-24 pb-12 flex flex-col justify-center">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+            <i class="fas fa-flag text-6xl text-amber-500 mb-8 drop-shadow-lg"></i>
+            <h2 class="text-5xl font-bold mb-12 tracking-widest">项目矩阵与愿景</h2>
+            
+            <div class="bg-white/10 backdrop-blur-md rounded-3xl p-10 md:p-16 mb-12 text-left border border-white/20 shadow-2xl">
+                <h3 class="text-3xl font-bold text-amber-400 mb-6 border-b border-white/20 pb-4">项目背景</h3>
+                <p class="text-birch-DEFAULT leading-relaxed mb-10 text-xl">
+                    本项目为 <strong class="text-white text-2xl">2026年大学生创新创业训练计划项目</strong>。面对中国北方少数民族独有的国家级非物质文化遗产——桦树皮画技艺逐渐失传的困境，我们团队立志通过前沿的数字技术（3D交互、AI大模型问答、UGC共创基因库）为其打造一个多维度的数字生态平台。
+                </p>
+                <h3 class="text-3xl font-bold text-amber-400 mb-6 border-b border-white/20 pb-4">联系团队</h3>
+                <div class="flex flex-col md:flex-row gap-8 text-xl">
+                    <p class="text-birch-DEFAULT flex items-center"><i class="fas fa-envelope mr-3 text-white text-2xl"></i> hrbust_huashupihua@qq.com</p>
+                    <p class="text-birch-DEFAULT flex items-center"><i class="fas fa-map-marker-alt mr-3 text-white text-2xl"></i> 中国 · 哈尔滨理工大学 创新创业中心</p>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-8">
+                <a href="https://web.wechat.com" target="_blank" class="w-16 h-16 bg-birch-light text-birch-dark rounded-full flex items-center justify-center text-3xl hover:scale-110 hover:bg-white transition shadow-xl"><i class="fab fa-weixin"></i></a>
+                <a href="https://www.sina.com.cn/" target="_blank" class="w-16 h-16 bg-birch-light text-birch-dark rounded-full flex items-center justify-center text-3xl hover:scale-110 hover:bg-white transition shadow-xl"><i class="fab fa-weibo"></i></a>
+                <a href="https://www.douyin.com/" target="_blank" class="w-16 h-16 bg-birch-light text-birch-dark rounded-full flex items-center justify-center text-3xl hover:scale-110 hover:bg-white transition shadow-xl"><i class="fab fa-tiktok"></i></a>
+            </div>
+            <p class="mt-12 text-base opacity-50">© 2026 大创团队 & 桦树皮画保护中心 | 保留所有权利</p>
+        </div>
+    </div>
+
+    <div id="image-modal" class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300" onclick="closeModal()">
+        <div class="relative max-w-5xl w-full flex flex-col items-center">
+            <img id="modal-img" src="" class="max-h-[85vh] object-contain rounded-lg shadow-2xl">
+            <p id="modal-title" class="text-white text-xl mt-4 font-bold tracking-widest"></p>
+        </div>
+    </div>
+
+    <script>
+        const pages = ['page-home', 'page-ar', 'page-ai', 'page-gallery', 'page-material', 'page-creative', 'page-about'];
+        const backBtn = document.getElementById('back-btn');
+
+        function goToPage(targetId) {
+            if (!isClickAllowed && targetId !== 'home') return;
+
+            pages.forEach(id => {
+                document.getElementById(id).classList.remove('active');
+            });
+
+            const targetPage = document.getElementById('page-' + targetId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0); 
+                setTimeout(updateScrollProgress, 50); 
+            }
+
+            if (targetId !== 'home') {
+                backBtn.classList.remove('hidden');
+            } else {
+                backBtn.classList.add('hidden');
+            }
+        }
+
+        const cube = document.getElementById('cube');
+        let isDragging = false, startX, startY, currentX = -15, currentY = 20;
+        let autoRotateY = 20, autoRotate = true, isClickAllowed = true;
+
+        const getClientX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
+        const getClientY = (e) => e.touches ? e.touches[0].clientY : e.clientY;
+
+        const dragStart = (e) => { 
+            isDragging = true; autoRotate = false; 
+            startX = getClientX(e); startY = getClientY(e); 
+            cube.style.transition = 'none'; isClickAllowed = true; 
+        };
+
+        const dragMove = (e) => { 
+            if (!isDragging) return; 
+            if (e.cancelable) e.preventDefault();
+            const deltaX = getClientX(e) - startX; const deltaY = getClientY(e) - startY; 
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) isClickAllowed = false; 
+            let newX = currentX - deltaY * 0.5; let newY = currentY + deltaX * 0.5; 
+            if (newX > 80) newX = 80; if (newX < -80) newX = -80; 
+            cube.style.transform = `rotateX(${newX}deg) rotateY(${newY}deg)`; 
+        };
+
+        const dragEnd = (e) => { 
+            if (!isDragging) return; 
+            isDragging = false; 
+            const style = cube.style.transform; 
+            const xMatch = style.match(/rotateX\(([-0-9.]+)deg\)/); 
+            const yMatch = style.match(/rotateY\(([-0-9.]+)deg\)/); 
+            if (xMatch) currentX = parseFloat(xMatch[1]); 
+            if (yMatch) currentY = parseFloat(yMatch[1]); 
+            autoRotateY = currentY; autoRotate = true; 
+            cube.style.transition = 'transform 0.1s linear'; 
+        };
+
+        cube.addEventListener('mousedown', dragStart); 
+        document.addEventListener('mousemove', dragMove); 
+        document.addEventListener('mouseup', dragEnd);
+        cube.addEventListener('touchstart', dragStart, {passive: false}); 
+        document.addEventListener('touchmove', dragMove, {passive: false}); 
+        document.addEventListener('touchend', dragEnd);
+
+        function animateCube() { 
+            if (autoRotate && !isDragging) { 
+                autoRotateY += 0.2; currentY = autoRotateY; 
+                cube.style.transform = `rotateX(${currentX}deg) rotateY(${currentY}deg)`; 
+            } 
+            requestAnimationFrame(animateCube); 
+        }
+        animateCube(); 
+
+        const modal = document.getElementById('image-modal'); 
+        const modalImg = document.getElementById('modal-img'); 
+        const modalTitle = document.getElementById('modal-title');
+        
+        function openModal(imgSrc, title) { 
+            modalImg.src = imgSrc; modalTitle.innerText = title; 
+            modal.classList.remove('hidden'); 
+            setTimeout(() => modal.classList.remove('opacity-0'), 10); 
+            document.body.style.overflow = 'hidden'; 
+        }
+        
+        function closeModal() { 
+            modal.classList.add('opacity-0'); 
+            setTimeout(() => { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }, 300); 
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.scroll-bounce').forEach(element => { observer.observe(element); });
+        });
+
+        const chatMessages = document.getElementById('chat-messages'); 
+        const chatInput = document.getElementById('chat-input');
+        
+        function handleKeyPress(e) { if (e.key === 'Enter') sendChatMessage(); }
+        
+        function sendChatMessage() {
+            const userText = chatInput.value.trim(); 
+            if (!userText) return;
+
+            appendMessage('user', userText); 
+            chatInput.value = ''; 
+            const loadingMsgId = appendMessage('ai', '<i class="fas fa-circle-notch fa-spin text-tech-blue"></i> 正在深度检索非遗知识大模型...');
+            
+            setTimeout(() => {
+                let reply = "";
+                if (userText.includes("工艺流程") && userText.includes("价值")) {
+                    reply = "<strong class='text-xl text-tech-blue'><i class='fas fa-check-circle'></i> 【桦艺新生·知识图谱深度解析】</strong><br><br>您好！关于您提出的深度学术问题，系统基于非遗大模型生成如下解析：<br><br><strong class='text-lg text-birch-dark border-l-4 border-tech-blue pl-2'>一、 纯手工核心工艺流程（活态传承四步法）</strong><br><span class='text-gray-600'>1. <strong>剥取与熟化：</strong> 严格遵循“夏剥白桦”的生态原则，绝不伤及树木形成层。原皮需经水煮脱脂、重压平整。<br>2. <strong>相皮构图：</strong> 依循树皮天然结节、纹理与色斑“因势象形”，将自然瑕疵转化为艺术点睛之笔。<br>3. <strong>剪刻拼贴：</strong> 利用不同色阶的树皮进行多图层立体拼贴，打破传统水墨画的平面限制，形成 2.5D 的空间纵深感。<br>4. <strong>高温烙烫：</strong> 舍弃任何化学颜料，纯以特制电烙铁利用“碳化原理”绘制光影过渡与细节灵魂。</span><br><br><strong class='text-lg text-birch-dark border-l-4 border-tech-blue pl-2'>二、 艺术美学与现代文创转化矩阵</strong><br><span class='text-gray-600'>作为第一批国家级非遗代表作，其核心壁垒体现在：<br>• <strong>原生态符号美学：</strong> 承载北方游猎民族（如鄂伦春族）万物有灵的自然崇拜，具备不可被工业化复制的沧桑肌理。<br>• <strong>数字资产转化（本项目核心）：</strong> 借由本平台的 WebAR 增强现实与大模型技术，传统静态手工艺得以转化为可交互、可沉浸的结构化数字资产。<br>• <strong>商业变现赋能：</strong> 突破传统“只展不卖”的困境，向下延伸至透光家居台灯、数字盲盒等生活美学赛道，真正实现“见人见物见生活”的活态造血机制。</span>";
+                }
+                else if (userText.includes("材料") || userText.includes("原料") || userText.includes("采集") || userText.includes("选材")) {
+                    reply = "好的，非常乐意为您解答。<br><br>桦树皮画的选材与采集是整门艺术的基石，不仅考验匠人的眼力，更蕴含着北方少数民族深厚的生态智慧：<br><br><strong class='text-lg text-tech-blue'>1. 树种与树龄的选择</strong><br>并非所有的桦树都能作画。匠人必须深入林区，寻找生长了二三十年以上的优质白桦树。这类白桦树的树皮厚度适中、柔韧性极佳、层次丰富且不易开裂。<br><br><strong class='text-lg text-tech-blue'>2. 严苛的采集时节 (Optimal Timing)</strong><br>传统的剥皮时间严格限制在每年的春末夏初（通常为小满至夏至期间，即端午节前后）。此时树木体内水分和养分最为充沛，树皮与木质层容易分离。<br><br><strong class='text-lg text-tech-blue'>3. 敬畏自然的古老智慧</strong><br>剥皮时，匠人使用特制的骨刀或钝器顺着树干划口，用巧劲揭下外皮。最核心的规矩是：**绝不伤及树木的形成层（木质层）**。这样不仅保证了材料的完美，白桦树在几年后还能重新长出新皮，生生不息。";
+                }
+                else if (userText.includes("历史") || userText.includes("起源") || userText.includes("渊源") || userText.includes("多久")) {
+                    reply = "为您梳理桦树皮画的千年历史脉络：<br><br>桦树皮画，又称桦皮画或桦皮烧画，是根植于中国北方广袤森林的古老民族记忆。<br><br><strong class='text-lg text-tech-blue'>• 远古溯源 (Origin)</strong><br>它发源于游猎民族（如鄂伦春族、鄂温克族、达斡尔族和赫哲族）。在漫长的历史中，先民们利用桦树皮轻便、防水、防腐的特性，制作独木舟、摇篮、针线盒等生活器具。为了美观，他们开始在这些器具上刻划代表吉祥的图腾或狩猎场景，这便是桦树皮画的雏形。<br><br><strong class='text-lg text-tech-blue'>• 技艺演进 (Evolution)</strong><br>到了隋唐及明清时期，随着金属工具的普及，刻划技艺逐渐向剪刻、拼贴和烫烙（使用烧红的铁钎）演变。从简单的实用器皿装饰，逐渐升华为独立的绘画艺术。<br><br><strong class='text-lg text-tech-blue'>• 现代传承 (Heritage)</strong><br>2006年，桦树皮制作技艺凭借其无可替代的文化与历史价值，正式被国务院批准列入**第一批国家级非物质文化遗产名录**。如今，它已成为向世界展示中国北方民族文化的重要数字名片。";
+                }
+                else if (userText.includes("怎么做") || userText.includes("制作") || userText.includes("工艺") || userText.includes("步骤")) {
+                    reply = "好的，非常乐意为您详细介绍桦树皮画的具体制作工艺。<br><br>桦树皮画的制作工艺复杂而精细，纯手工打造，大致可以分为以下四个核心步骤：<br><br><strong class='text-lg text-tech-blue'>第一步：采剥与熟化 (Material Processing)</strong><br>剥取新鲜的桦树皮后，需要经过反复的水煮（脱脂提纯）、重物压平以及通风阴干，去除表面粗糙的老皮，暴露出细腻、平滑的内层画布。<br><br><strong class='text-lg text-tech-blue'>第二步：相皮与构图 (Artistic Design)</strong><br>这是最具艺术创造力的一步，行话叫“相皮”。匠人需要敏锐地观察每块树皮天然的结节、斑点、白霜和暗红色彩，因势象形。例如，把天然的树结巧妙地设计成画中动物的眼睛，做到“虽由人作，宛自天开”。<br><br><strong class='text-lg text-tech-blue'>第三步：剪刻与拼贴 (Cutting & Layering)</strong><br>利用不同颜色和质地的树皮，剪刻出远山、近水、人物、神鹿等元素。通过多层次的叠加拼贴，营造出普通水墨画难以企及的 3D 立体感和空间纵深。<br><br><strong class='text-lg text-tech-blue'>第四步：烙烫修饰 (Ironing & Finishing)</strong><br>使用特制的电烙铁，利用不同温度在树皮表面烫出焦褐色的线条和阴影过渡，赋予画面光影效果与灵魂。整个过程不使用任何化学颜料，纯靠树皮本色与火的艺术。";
+                }
+                else if (userText.includes("价值") || userText.includes("意义") || userText.includes("特色")) {
+                    reply = "桦树皮画拥有极高的多维度价值：<br><br><strong class='text-lg text-tech-blue'>1. 独特的艺术美学</strong><br>它抛弃了传统的笔墨纸砚，以树皮为纸，以火为墨。通过天然肌理与烫烙技法的结合，呈现出一种无法被工业化复制的质朴、沧桑的自然之美。<br><br><strong class='text-lg text-tech-blue'>2. 活态的民族史诗</strong><br>对于过去没有文字的北方游猎民族而言，桦树皮画就是他们的“视觉史书”。它忠实地记录了萨满信仰、驯鹿文化和游猎生活，是研究北方民族人类学、民俗学的珍贵活化石。<br><br><strong class='text-lg text-tech-blue'>3. 现代文创转化价值</strong><br>在数字化与大创项目的赋能下，桦树皮画正突破传统的挂画形式，与现代家居（如透光台灯）、数字盲盒、文旅伴手礼深度结合，焕发出巨大的商业潜力与时代生命力。";
+                }
+                else if (userText.includes("你好") || userText.includes("嗨") || userText.includes("谁") || userText.includes("名字")) {
+                    reply = "您好！我是专门为本次【桦艺新生】大学生创新创业训练计划开发的**专属 AI 大模型助手**。<br><br>我已经深度学习了数十万字的非物质文化遗产文献、历史典籍以及传承人访谈资料。您可以向我提问关于桦树皮画的<strong class='text-tech-blue'>【起源历史】</strong>、<strong class='text-tech-blue'>【制作工艺】</strong>、<strong class='text-tech-blue'>【材料选取】</strong>或<strong class='text-tech-blue'>【文化价值】</strong>，我将为您提供最专业、详尽的解答。";
+                }
+                else {
+                    reply = "这是一个非常有深度的视角！<br><br>桦树皮画作为中国北方游猎民族独有的“指尖上的森林艺术”，其背后蕴含着极其丰富的自然地理学与民俗学知识。<br><br>为了给您提供最精准的解答，建议您可以尝试围绕以下几个核心维度向我提问：<br>• <strong class='text-tech-blue'>“这门手艺的具体制作工艺是什么？”</strong><br>• <strong class='text-tech-blue'>“桦树皮画有什么历史渊源？”</strong><br>• <strong class='text-tech-blue'>“采剥树皮会伤害树木吗？”</strong>";
+                }
+                
+                updateMessage(loadingMsgId, reply);
+            }, 1200); 
+        }
+
+        function appendMessage(sender, htmlContent) {
+            const msgId = 'msg-' + Date.now();
+            const msgDiv = document.createElement('div');
+            
+            if (sender === 'user') {
+                msgDiv.className = 'flex items-start gap-3 flex-row-reverse';
+                msgDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-tech-blue text-white flex items-center justify-center flex-shrink-0 shadow-md"><i class="fas fa-user"></i></div><div class="bg-blue-50 p-4 rounded-2xl rounded-tr-none shadow border border-blue-100 text-gray-800 max-w-[80%]">${htmlContent}</div>`;
+            } else {
+                msgDiv.className = 'flex items-start gap-3';
+                msgDiv.innerHTML = `<div class="w-10 h-10 rounded-full bg-tech-blue text-white flex items-center justify-center flex-shrink-0 shadow-md"><i class="fas fa-robot"></i></div><div id="${msgId}" class="bg-white p-4 rounded-2xl rounded-tl-none shadow border border-gray-100 text-gray-700 leading-relaxed max-w-[80%]">${htmlContent}</div>`;
+            }
+            
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return msgId;
+        }
+
+        function updateMessage(msgId, newHtml) {
+            const el = document.getElementById(msgId);
+            if(el) {
+                el.innerHTML = newHtml;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        const presetMaterials = [
+            { src: "https://i.ibb.co/rGSqVPpX/image.jpg", title: "骑马狩猎" },
+            { src: "https://i.ibb.co/k6gYh1kN/image.png", title: "桦林狼影" },
+            { src: "https://i.ibb.co/8LnmgRmD/image.png", title: "使鹿部落" },
+            { src: "https://i.ibb.co/n8BxpRHj/image.png", title: "故乡白桦" },
+            { src: "https://i.ibb.co/M5Ss717f/image.jpg", title: "林深见鹿" },
+            { src: "https://i.ibb.co/zTdVFvZq/image.jpg", title: "北方生活" },
+            { src: "https://i.ibb.co/Z1zx63HP/2026-04-12-212259.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/gMZKg9dM/2026-04-12-212441.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/6RbVp66k/2026-04-12-212601.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/nsqvsb2v/2026-04-12-212658.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/6Jcyf5MG/2026-04-12-212523.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/tT7hDfrw/2026-04-12-213249.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/whBg7JJq/2026-04-12-213557.png", title: "桦艺素材" },
+            { src: "https://i.ibb.co/PsxJZs1P/2026-04-12-213441.png", title: "桦艺素材" }
+        ];
+
+        function renderMaterials() {
+            const grid = document.getElementById('material-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = ''; 
+            let customMaterials = [];
+            try { 
+                const stored = localStorage.getItem('huapi_custom_materials'); 
+                if (stored) customMaterials = JSON.parse(stored); 
+            } catch(e) { console.error(e); }
+            
+            const allMaterials = [...customMaterials, ...presetMaterials].filter(mat => mat && mat.src && mat.src.trim() !== '');
+
+            allMaterials.forEach((mat, index) => {
+                const isCustom = index < customMaterials.length; 
+                const badge = isCustom ? `<span class="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse mb-3">作者私有素材</span>` : '';
+                const borderClass = isCustom ? 'border-2 border-emerald-400 slide-down-anim' : 'border border-gray-100';
+                const safeTitle = mat.title || '桦艺数字素材';
+                
+                const html = `
+                <div class="relative group rounded-2xl overflow-hidden shadow-md bg-white ${borderClass}">
+                    <img src="${mat.src}" alt="${safeTitle}" class="w-full h-48 object-cover">
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition p-4 text-center">
+                        ${badge}
+                        <p class="text-white font-bold text-sm mb-3">${safeTitle}</p>
+                        <a href="${mat.src}" target="_blank" download="${safeTitle}.jpg" class="bg-white text-emerald-800 px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition">
+                            <i class="fas fa-download mr-1"></i> 提取
+                        </a>
+                    </div>
+                </div>`;
+                grid.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgSrc = e.target.result; 
+                let customMaterials = [];
+                try {
+                    const stored = localStorage.getItem('huapi_custom_materials');
+                    if (stored) customMaterials = JSON.parse(stored);
+                    customMaterials.unshift({ src: imgSrc, title: "新增用户共创衍生素材" });
+                    if (customMaterials.length > 4) customMaterials.pop();
+                    localStorage.setItem('huapi_custom_materials', JSON.stringify(customMaterials));
+                    renderMaterials();
+                } catch(err) { 
+                    alert("由于大创展示版基于浏览器沙盒环境，底层缓存被限制。图片内存开销可能过大无法触发持久化留存，但内存渲染依然生效。"); 
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+        
+        window.addEventListener('DOMContentLoaded', renderMaterials);
+
+        const scrollTopBtn = document.getElementById('scroll-to-top-btn');
+        const scrollProgress = document.getElementById('scroll-progress-circle');
+        const CIRCUMFERENCE = 125.6; 
+
+        function updateScrollProgress() {
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            
+            let percentage = 0;
+            if (scrollHeight > 0) percentage = scrollTop / scrollHeight;
+            
+            const offset = CIRCUMFERENCE - (percentage * CIRCUMFERENCE);
+            scrollProgress.style.strokeDashoffset = offset;
+
+            if (scrollTop > 100) {
+                scrollTopBtn.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                scrollTopBtn.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                scrollTopBtn.classList.remove('opacity-100', 'translate-y-0');
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', updateScrollProgress);
+        window.addEventListener('DOMContentLoaded', updateScrollProgress);
+    </script>
+</body>
+</html>

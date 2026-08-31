@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}千年时间轴{% endblock %}
+
+{% block content %}
+<div class="bg-birch-light bg-texture min-h-screen pt-14 pb-20">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="text-center mb-16 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-birch-dark mb-4">千年时间轴</h2>
+            <p class="text-gray-600 text-lg">从森林里的实用器物，到国家级非遗，再到数字时代的新生——一块树皮的三千年旅程。</p>
+        </div>
+
+        <div class="timeline-line relative">
+            {% set events = [
+                ('约 3000 年前', '桦皮文化起源', '考古资料证明，中国北方少数民族此时已掌握桦皮加工技艺。白桦树皮轻便、防水、防腐，被游猎民族制成器物，桦皮文化自此生根。', 'fa-seedling'),
+                ('汉代', '鲜卑墓葬的千年实证', '1959 年，满洲里扎赉诺尔汉代鲜卑墓一次性出土上千件桦皮器皿盖；1960 年又在同地汉墓发现多种桦木、桦皮器皿，实证桦皮技艺两千年前已相当成熟。', 'fa-landmark'),
+                ('辽代', '森林民族的日常', '呼伦贝尔白辛墓、兴安盟科右中旗巴札嘎墓等辽代墓葬中，均出土北方民族使用的桦树皮器皿残件，桦皮器物贯穿渔猎生活始终。', 'fa-water'),
+                ('隋唐 · 明清', '从刻划到艺术', '金属工具普及后，器物装饰由简单刻划走向剪刻；明清时期剪刻、拼贴、烫烙技法集大成，桦皮装饰从实用走向独立画种。', 'fa-palette'),
+                ('2006 年 5 月 20 日', '列入国家级非遗', '桦树皮制作技艺经国务院批准列入第一批国家级非物质文化遗产代表性项目名录，编号 Ⅷ-83（传统技艺类），申报地：内蒙古鄂伦春自治旗、黑龙江省。', 'fa-certificate'),
+                ('2007 年', '首批国家级传承人', '付占祥（赫哲族，黑龙江饶河）入选第一批国家级非物质文化遗产项目代表性传承人。', 'fa-medal'),
+                ('2008 年', '桦皮船技艺扩编', '桦树皮制作技艺（鄂伦春族桦树皮船制作技艺）列入国家级非遗扩展项目。桦皮船鄂伦春语称"奥木鲁钦"，以樟子松板条为骨、桦皮为体，全船不用一根铁钉。', 'fa-ship'),
+                ('2017 年', '抢救性记录', '黑龙江省非遗中心启动对付占祥桦树皮制作技艺的抢救性记录，拍摄完成技艺纪录片；饶河县建有展览馆与多个传习所。', 'fa-film'),
+                ('2026 年', '数字新生 · 桦艺新生', '本大创团队以 WebAR、AI 大模型、共创素材库等技术，为这门古老技艺搭建数字生态平台——这就是你正在浏览的网站。', 'fa-rocket'),
+            ] %}
+            {% for time, title, desc, icon in events %}
+            <div class="relative mb-12 pl-12 md:pl-0 md:w-1/2 scroll-bounce {{ 'md:pr-14' if loop.index is odd else 'md:ml-auto md:pl-14' }}">
+                <div class="absolute left-20px md:left-auto {{ 'md:-right-3' if loop.index is odd else 'md:-left-3' }} top-6 w-6 h-6 rounded-full bg-birch-dark border-4 border-birch-light shadow" style="left:12px;"></div>
+                <div class="bg-white rounded-3xl shadow-lg border border-birch p-6 hover:shadow-xl transition {{ 'md:text-right' if loop.index is odd else '' }}">
+                    <span class="inline-block text-xs font-bold tracking-wider bg-birch-dark text-birch-light px-3 py-1 rounded-full mb-3">{{ time }}</span>
+                    <h3 class="text-xl font-bold text-birch-dark mb-2 flex items-center gap-2 {{ 'md:justify-end' if loop.index is odd else '' }}">
+                        <i class="fas {{ icon }} text-amber-700 text-base"></i>{{ title }}
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed text-sm md:text-base">{{ desc }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-8 scroll-bounce">
+            <a href="/inheritors" class="inline-flex items-center gap-2 bg-birch-dark text-white px-8 py-3 rounded-full font-bold hover:bg-birch-accent transition">
+                认识守护这门技艺的人 <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

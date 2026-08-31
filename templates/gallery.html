@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}全景视听数字展馆{% endblock %}
+
+{% block content %}
+<div class="bg-birch-light bg-texture min-h-screen pt-14 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-birch-dark mb-4">全景视听数字展馆</h2>
+            <p class="text-gray-600 text-xl">沉浸式叙事：从历史源起到匠心技艺，再到光影留存。点击画作可留言交流。</p>
+        </div>
+
+        <!-- 篇章一 千年溯源 -->
+        <div class="mb-14 bg-white p-10 rounded-3xl shadow-xl border border-birch relative overflow-hidden scroll-bounce">
+            <div class="absolute right-0 top-0 opacity-5 pointer-events-none"><i class="fas fa-history text-[15rem]"></i></div>
+            <h3 class="text-3xl font-bold text-birch-dark mb-6 flex items-center gap-3 border-b border-gray-100 pb-4 relative z-10">
+                <i class="fas fa-scroll text-amber-700"></i> 篇章一：千年溯源
+            </h3>
+            <div class="space-y-4 text-gray-600 text-lg leading-relaxed relative z-10">
+                <p><strong>远古雏形：</strong>考古证实约 3000 年前中国北方民族已掌握桦皮加工。1959 年，满洲里扎赉诺尔汉代鲜卑墓一次性出土上千件桦皮器皿盖；辽代墓葬中亦见桦皮器皿残件——桦皮文化跨越千年从未断绝。</p>
+                <p><strong>技艺演进：</strong>从实用器物（桦皮船、箱盒、篓碗）上的吉祥刻划，到隋唐金属工具普及后剪刻技艺的成熟，再到明清剪刻、拼贴、烫烙的集大成，实用装饰升华为独立画种。</p>
+                <p><strong>正式列编：</strong>2006 年 5 月 20 日，桦树皮制作技艺经国务院批准列入<strong>第一批国家级非物质文化遗产代表性项目名录</strong>（编号 Ⅷ-83，传统技艺类）；2008 年，鄂伦春族桦树皮船制作技艺作为扩展项目入选。</p>
+                <div class="flex gap-3 pt-2">
+                    <a href="/timeline" class="inline-flex items-center gap-2 text-sm bg-birch-dark text-white px-5 py-2.5 rounded-full hover:bg-birch-accent transition">进入千年时间轴 <i class="fas fa-arrow-right"></i></a>
+                    <a href="/craft" class="inline-flex items-center gap-2 text-sm border border-birch-dark text-birch-dark px-5 py-2.5 rounded-full hover:bg-birch-light transition">深度了解四步工艺 <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 篇章二 四步匠心 -->
+        <div class="mb-16 bg-white p-10 rounded-3xl shadow-xl border border-birch relative overflow-hidden scroll-bounce">
+            <div class="absolute left-0 bottom-0 opacity-5 pointer-events-none"><i class="fas fa-hammer text-[15rem]"></i></div>
+            <h3 class="text-3xl font-bold text-birch-dark mb-8 flex items-center gap-3 border-b border-gray-100 pb-4 relative z-10">
+                <i class="fas fa-hands text-amber-700"></i> 篇章二：四步匠心
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+                <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center hover:-translate-y-1 transition">
+                    <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">1</div>
+                    <h4 class="text-xl font-bold text-birch-dark mb-2">自然采集</h4>
+                    <p class="text-gray-600">春末夏初，剥取最具韧性的白桦外皮。</p>
+                </div>
+                <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center hover:-translate-y-1 transition">
+                    <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">2</div>
+                    <h4 class="text-xl font-bold text-birch-dark mb-2">熟化处理</h4>
+                    <p class="text-gray-600">水煮压平，去粗留精，获得柔韧画布。</p>
+                </div>
+                <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center hover:-translate-y-1 transition">
+                    <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">3</div>
+                    <h4 class="text-xl font-bold text-birch-dark mb-2">顺势构图</h4>
+                    <p class="text-gray-600">依据天然结节与色彩，"相皮"定图。</p>
+                </div>
+                <div class="p-6 border border-birch rounded-2xl bg-birch-light text-center hover:-translate-y-1 transition">
+                    <div class="w-14 h-14 bg-birch-dark text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold mb-4 shadow-inner">4</div>
+                    <h4 class="text-xl font-bold text-birch-dark mb-2">烫刻创作</h4>
+                    <p class="text-gray-600">电烙铁高温烫烙，结合剪贴形成立体感。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 篇章三 画作展出 -->
+        <div class="mb-20">
+            <h3 class="text-3xl font-bold text-birch-dark mb-8 flex items-center justify-center gap-3 scroll-bounce">
+                <i class="fas fa-image text-amber-700"></i> 篇章三：数字修复展出
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for a in artworks %}
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer scroll-bounce" style="transition-delay: {{ loop.index0 * 80 }}ms"
+                     onclick="openArtwork('{{ a.slug }}')">
+                    <div class="h-64 overflow-hidden bg-birch-light">
+                        <img src="{{ url_for('serve_image', filename=a.file) }}" alt="{{ a.title }}"
+                             class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500" loading="lazy">
+                    </div>
+                    <div class="p-5 border-t border-birch flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-birch-dark">{{ a.title }}</h3>
+                        <span class="flex items-center gap-2 text-xs text-gray-400"><i class="fas fa-comments"></i> 看留言</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 篇章四 光影纪录 -->
+        <div class="border-t border-birch-dark/20 pt-14">
+            <h3 class="text-3xl font-bold text-birch-dark mb-8 flex items-center justify-center gap-3 scroll-bounce">
+                <i class="fas fa-film text-red-600"></i> 篇章四：多维光影纪录
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <a href="https://v.douyin.com/YEXMEsge6H4/" target="_blank" rel="noopener"
+                   class="bg-gray-800 text-white rounded-3xl p-8 hover:bg-gray-700 transition shadow-xl flex flex-col items-center text-center group scroll-bounce">
+                    <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition"><i class="fab fa-tiktok"></i></div>
+                    <h4 class="text-xl font-bold mb-3">制作过程实拍</h4>
+                    <p class="text-gray-400 text-sm">直击匠人原生态纯手工创作全过程</p>
+                </a>
+                <a href="https://v.douyin.com/dsfcxpLEntQ/" target="_blank" rel="noopener"
+                   class="bg-gray-800 text-white rounded-3xl p-8 hover:bg-gray-700 transition shadow-xl flex flex-col items-center text-center group scroll-bounce" style="transition-delay:150ms;">
+                    <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition"><i class="fas fa-user-tie"></i></div>
+                    <h4 class="text-xl font-bold mb-3">传承人访谈</h4>
+                    <p class="text-gray-400 text-sm">听国家级非遗老手艺人讲述守望故事</p>
+                </a>
+                <a href="http://xhslink.com/o/6SyKhiiKcI3" target="_blank" rel="noopener"
+                   class="bg-red-700 text-white rounded-3xl p-8 hover:bg-red-800 transition shadow-xl flex flex-col items-center text-center group scroll-bounce" style="transition-delay:300ms;">
+                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-6 text-3xl group-hover:scale-110 transition"><i class="fas fa-book-open"></i></div>
+                    <h4 class="text-xl font-bold mb-3">青年科普专栏</h4>
+                    <p class="text-gray-200 text-sm">图文并茂，以年轻人视角拆解非遗魅力</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 画作详情弹窗 -->
+<div id="artwork-modal" class="fixed inset-0 z-[100] bg-black/80 hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-3xl w-full my-8 overflow-hidden shadow-2xl">
+        <div class="relative bg-birch-light">
+            <img id="modal-img" src="" class="w-full max-h-[55vh] object-contain" alt="">
+            <button onclick="closeArtwork()" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 text-white hover:bg-black transition"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+                <h3 id="modal-title" class="text-2xl font-bold text-birch-dark"></h3>
+                <a id="modal-download" href="" download class="text-sm text-tech-blue hover:underline"><i class="fas fa-download mr-1"></i>下载原图</a>
+            </div>
+            <p id="modal-desc" class="text-gray-600 leading-relaxed mb-6"></p>
+            <div id="modal-comments"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/comments.js') }}"></script>
+<script>
+const ARTWORK_MAP = {
+    {% for a in artworks %}
+    '{{ a.slug }}': { title: '{{ a.title }}', desc: '{{ a.desc }}', img: '{{ url_for('serve_image', filename=a.file) }}' },
+    {% endfor %}
+};
+
+function openArtwork(slug) {
+    const a = ARTWORK_MAP[slug];
+    if (!a) return;
+    document.getElementById('modal-img').src = a.img;
+    document.getElementById('modal-title').innerText = a.title;
+    document.getElementById('modal-desc').innerText = a.desc;
+    const dl = document.getElementById('modal-download');
+    dl.href = a.img;
+    dl.setAttribute('download', a.title + a.img.slice(a.img.lastIndexOf('.')));
+    const modal = document.getElementById('artwork-modal');
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    mountComments(document.getElementById('modal-comments'), slug);
+}
+function closeArtwork() {
+    const modal = document.getElementById('artwork-modal');
+    modal.classList.add('hidden'); modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+document.getElementById('artwork-modal').addEventListener('click', e => {
+    if (e.target.id === 'artwork-modal') closeArtwork();
+});
+</script>
+{% endblock %}

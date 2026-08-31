@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}首页{% endblock %}
+
+{% block content %}
+<div class="relative min-h-screen flex flex-col items-center justify-center select-none pt-10 pb-16 bg-gradient-to-b from-tech-light/40 via-white to-birch-light/60 overflow-hidden">
+    <div class="absolute inset-0 bg-texture opacity-40 pointer-events-none"></div>
+
+    <div class="text-center mb-6 w-full relative z-10 fade-up">
+        <h1 class="text-5xl md:text-7xl font-extrabold text-tech-blue mb-4 tracking-widest drop-shadow-sm"
+            style="text-shadow: 0 0 15px rgba(56,189,248,.5);">桦艺新生</h1>
+        <h2 class="text-2xl md:text-3xl text-blue-900 font-bold mb-6 tracking-wide">桦树皮画数字体验平台</h2>
+        <p class="text-sm md:text-base text-gray-500 tracking-widest max-w-3xl mx-auto px-4">
+            北方民族的传统艺术瑰宝 <span class="mx-2 text-tech-blue">|</span> 国家级非遗 · 编号 Ⅷ-83 <span class="mx-2 text-tech-blue">|</span> 数字化创新探索
+        </p>
+    </div>
+
+    <div class="scene">
+        <div class="cube" id="cube">
+            <a class="face front" href="/ar">
+                <i class="fas fa-vr-cardboard mb-3 text-4xl text-purple-600"></i>
+                <span class="text-purple-700">AR 试贴体验</span>
+            </a>
+            <a class="face right" href="/ai">
+                <i class="fas fa-robot mb-3 text-4xl"></i>
+                <span>AI 智能问答</span>
+            </a>
+            <a class="face back" href="/gallery">
+                <i class="fas fa-image mb-3 text-4xl"></i>
+                <span>全景视听展馆</span>
+            </a>
+            <a class="face left" href="/material">
+                <i class="fas fa-images mb-3 text-4xl text-emerald-600"></i>
+                <span class="text-emerald-700">桦艺素材库</span>
+            </a>
+            <a class="face top" href="/inheritors">
+                <i class="fas fa-users mb-3 text-4xl text-amber-600"></i>
+                <span class="text-amber-700">传承人故事</span>
+            </a>
+            <a class="face bottom" href="/about">
+                <i class="fas fa-project-diagram mb-3 text-4xl"></i>
+                <span>项目与留言</span>
+            </a>
+        </div>
+    </div>
+
+    <p class="relative z-10 text-gray-400 mt-10 animate-pulse inline-flex items-center gap-2 text-sm border border-gray-200 px-5 py-2.5 rounded-full shadow-sm bg-white">
+        <i class="fas fa-hand-pointer text-tech-blue"></i> 拨动魔方，点击进入对应板块
+    </p>
+
+    <!-- 模块快捷入口 -->
+    <div class="relative z-10 mt-14 max-w-4xl px-4 w-full">
+        <p class="text-center text-xs text-gray-400 tracking-[.3em] mb-5">—— 探索更多板块 ——</p>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
+            <a href="/timeline" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-md transition">
+                <i class="fas fa-history text-2xl text-birch-accent mb-2 block"></i>千年时间轴
+            </a>
+            <a href="/craft" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-md transition">
+                <i class="fas fa-hands text-2xl text-birch-accent mb-2 block"></i>工艺详解
+            </a>
+            <a href="/culture" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-md transition">
+                <i class="fas fa-globe-asia text-2xl text-birch-accent mb-2 block"></i>民族图谱
+            </a>
+            <a href="/quiz" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-md transition">
+                <i class="fas fa-trophy text-2xl text-birch-accent mb-2 block"></i>问答挑战
+            </a>
+            <a href="/about" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center hover:-translate-y-1 hover:shadow-md transition col-span-2 sm:col-span-1">
+                <i class="fas fa-comments text-2xl text-birch-accent mb-2 block"></i>留言交流
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const cube = document.getElementById('cube');
+    let isDragging = false, startX, startY, currentX = -15, currentY = 20;
+    let autoRotateY = 20, autoRotate = true, isClickAllowed = true;
+    const getX = e => e.touches ? e.touches[0].clientX : e.clientX;
+    const getY = e => e.touches ? e.touches[0].clientY : e.clientY;
+
+    const dragStart = e => { isDragging = true; autoRotate = false; startX = getX(e); startY = getY(e); cube.style.transition = 'none'; isClickAllowed = true; };
+    const dragMove = e => {
+        if (!isDragging) return;
+        if (e.cancelable) e.preventDefault();
+        const dx = getX(e) - startX, dy = getY(e) - startY;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) isClickAllowed = false;
+        let nx = currentX - dy * 0.5, ny = currentY + dx * 0.5;
+        if (nx > 80) nx = 80; if (nx < -80) nx = -80;
+        cube.style.transform = `rotateX(${nx}deg) rotateY(${ny}deg)`;
+    };
+    const dragEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        const m = cube.style.transform.match(/rotateX\(([-0-9.]+)deg\) rotateY\(([-0-9.]+)deg\)/);
+        if (m) { currentX = parseFloat(m[1]); currentY = parseFloat(m[2]); }
+        autoRotateY = currentY; autoRotate = true;
+        cube.style.transition = 'transform .1s linear';
+    };
+    cube.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', dragMove);
+    document.addEventListener('mouseup', dragEnd);
+    cube.addEventListener('touchstart', dragStart, { passive: false });
+    document.addEventListener('touchmove', dragMove, { passive: false });
+    document.addEventListener('touchend', dragEnd);
+    cube.addEventListener('click', e => { if (!isClickAllowed) e.preventDefault(); }, true);
+
+    (function animate() {
+        if (autoRotate && !isDragging) {
+            autoRotateY += 0.2; currentY = autoRotateY;
+            cube.style.transform = `rotateX(${currentX}deg) rotateY(${currentY}deg)`;
+        }
+        requestAnimationFrame(animate);
+    })();
+})();
+</script>
+{% endblock %}

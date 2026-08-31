@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}素材共创库{% endblock %}
+
+{% block content %}
+<div class="bg-emerald-50/50 min-h-screen pt-14 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-emerald-800 mb-4">
+                <i class="fas fa-images mr-3"></i>桦树皮画素材共创库
+            </h2>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">
+                一个开放的非遗数字基因库：提取高清纹理用于二次创作，登录后也可上传你的优质图片，与大家共同丰富素材库。
+            </p>
+        </div>
+
+        <!-- 上传区 -->
+        <div class="mb-12 scroll-bounce">
+            <div id="upload-zone" class="bg-white border-4 border-dashed border-emerald-300 rounded-3xl p-10 text-center cursor-pointer hover:bg-emerald-50 transition shadow-sm group"
+                 onclick="document.getElementById('file-upload').click()">
+                <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-emerald-600"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">点击上传素材{% if not user %}（需先登录）{% endif %}</h3>
+                <p class="text-gray-500">支持 JPG / PNG / WebP，单张不超过 5MB</p>
+                <input type="file" id="file-upload" class="hidden" accept=".jpg,.jpeg,.png,.webp" onchange="uploadFile(event)">
+            </div>
+        </div>
+
+        <!-- 官方纹理素材 -->
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4 scroll-bounce">官方开源 · 高清纹理素材</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            {% for t in textures %}
+            <div class="relative group rounded-2xl overflow-hidden shadow-md bg-white border border-gray-100 scroll-bounce" style="transition-delay: {{ loop.index0 * 60 }}ms">
+                <img src="{{ url_for('serve_image', filename=t) }}" alt="桦艺纹理素材" loading="lazy"
+                     class="w-full h-48 object-cover">
+                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition p-4 text-center">
+                    <p class="text-white font-bold text-sm mb-3">桦皮纹理 · {{ '%02d' % loop.index }}</p>
+                    <a href="{{ url_for('serve_image', filename=t) }}" download
+                       class="bg-white text-emerald-800 px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition">
+                        <i class="fas fa-download mr-1"></i> 提取
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 用户共创素材 -->
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-emerald-500 pl-4 scroll-bounce">
+            用户共创 · 实时更新 <span id="material-count" class="text-sm text-gray-400 font-normal"></span>
+        </h3>
+        <div id="material-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
+        <p id="material-empty" class="hidden text-center text-gray-400 py-10">
+            还没有用户上传素材，点击上方虚线框上传第一张吧！
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/material.js') }}"></script>
+{% endblock %}

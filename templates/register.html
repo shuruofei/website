@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}注册{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 to-birch-light/60 flex items-center justify-center px-4 py-20">
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 p-10 fade-up">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-600 text-white flex items-center justify-center mb-4 shadow-lg">
+                <i class="fas fa-user-plus text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-800">加入桦艺新生</h2>
+            <p class="text-gray-400 text-sm mt-1">注册后可上传素材、参与全站留言</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-sm font-bold text-gray-600">用户名</label>
+                <input id="reg-username" class="w-full mt-1.5 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400/40" placeholder="2-20 位字母、数字或下划线">
+            </div>
+            <div>
+                <label class="text-sm font-bold text-gray-600">密码</label>
+                <input id="reg-password" type="password" class="w-full mt-1.5 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400/40" placeholder="至少 6 位">
+            </div>
+            <div>
+                <label class="text-sm font-bold text-gray-600">确认密码</label>
+                <input id="reg-password2" type="password" class="w-full mt-1.5 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-400/40" placeholder="再次输入密码" onkeypress="if(event.key==='Enter') doRegister()">
+            </div>
+            <p id="reg-error" class="hidden text-sm text-rose-500 bg-rose-50 rounded-lg px-3 py-2"></p>
+            <button onclick="doRegister()" id="reg-btn"
+                    class="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold hover:bg-emerald-700 transition shadow-md">
+                注 册
+            </button>
+        </div>
+
+        <div class="mt-6 text-center text-sm text-gray-400">
+            已有账号？<a href="/login" class="text-emerald-600 hover:underline font-medium">去登录</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function doRegister() {
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const password2 = document.getElementById('reg-password2').value;
+    const err = document.getElementById('reg-error');
+    err.classList.add('hidden');
+    if (password !== password2) {
+        err.textContent = '两次输入的密码不一致';
+        err.classList.remove('hidden');
+        return;
+    }
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+    const resp = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+    });
+    const data = await resp.json();
+    if (data.ok) {
+        location.href = '/';
+    } else {
+        btn.disabled = false;
+        btn.innerText = '注 册';
+        err.textContent = data.msg || '注册失败';
+        err.classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}

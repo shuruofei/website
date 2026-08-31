@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}知识问答挑战{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-indigo-50 to-white min-h-screen pt-14 pb-20">
+    <div class="max-w-3xl mx-auto px-4">
+        <div class="text-center mb-10 scroll-bounce">
+            <h2 class="text-4xl md:text-5xl font-bold text-indigo-800 mb-4">桦艺知识挑战</h2>
+            <p class="text-gray-600 text-lg">8 道题，测测你对桦树皮画的了解程度。</p>
+        </div>
+
+        <div id="quiz-start" class="bg-white rounded-3xl shadow-xl border border-indigo-100 p-10 text-center scroll-bounce">
+            <div class="w-20 h-20 mx-auto rounded-full bg-indigo-100 flex items-center justify-center mb-5">
+                <i class="fas fa-trophy text-4xl text-indigo-600"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">准备好了吗？</h3>
+            <p class="text-gray-500 mb-6 text-sm">题目涵盖历史、工艺、传承人与民族文化。答错不扣分，大胆作答！</p>
+            <p id="best-score" class="text-sm text-amber-600 font-bold mb-4 hidden"></p>
+            <button onclick="startQuiz()" class="bg-indigo-600 text-white px-10 py-3.5 rounded-full font-bold shadow-lg hover:bg-indigo-700 hover:-translate-y-0.5 transition">
+                <i class="fas fa-play mr-2"></i>开始挑战
+            </button>
+        </div>
+
+        <div id="quiz-box" class="hidden bg-white rounded-3xl shadow-xl border border-indigo-100 p-8">
+            <div class="flex justify-between items-center mb-5 text-sm">
+                <span class="font-bold text-indigo-700"><span id="q-now">1</span> / <span id="q-total">8</span></span>
+                <span class="text-gray-400">得分 <span id="q-score" class="text-indigo-600 font-bold">0</span></span>
+            </div>
+            <div class="w-full h-2 bg-gray-100 rounded-full mb-6">
+                <div id="q-progress" class="h-full bg-indigo-500 rounded-full transition-all duration-500" style="width:0%"></div>
+            </div>
+            <h3 id="q-text" class="text-xl font-bold text-gray-800 mb-6 leading-relaxed"></h3>
+            <div id="q-options" class="space-y-3"></div>
+            <div id="q-feedback" class="hidden mt-5 rounded-xl p-4 text-sm"></div>
+            <button id="q-next" onclick="nextQuestion()" class="hidden w-full mt-5 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">
+                下一题 <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+
+        <div id="quiz-result" class="hidden bg-white rounded-3xl shadow-xl border border-indigo-100 p-10 text-center">
+            <div id="r-emoji" class="text-6xl mb-4"></div>
+            <h3 id="r-title" class="text-2xl font-bold text-gray-800 mb-2"></h3>
+            <p id="r-desc" class="text-gray-500 mb-2"></p>
+            <p class="text-3xl font-extrabold text-indigo-600 my-4"><span id="r-score">0</span> / 8</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="startQuiz()" class="bg-indigo-600 text-white px-8 py-3 rounded-full font-bold hover:bg-indigo-700 transition"><i class="fas fa-redo mr-1"></i>再来一次</button>
+                <a href="/craft" class="border border-indigo-300 text-indigo-600 px-8 py-3 rounded-full font-bold hover:bg-indigo-50 transition"><i class="fas fa-book mr-1"></i>回去补课</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

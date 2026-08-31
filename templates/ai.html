@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}AI 智能问答{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen pt-20 pb-6 flex flex-col" style="height:calc(100dvh - 4rem);">
+    <div class="max-w-4xl mx-auto w-full px-4 flex-1 flex flex-col min-h-0">
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-extrabold text-tech-blue"><i class="fas fa-robot"></i> 桦艺 AI 大模型中枢</h2>
+            <p class="text-gray-500 mt-2">本地化知识库赋能的智能问答系统 · 由智谱 GLM 驱动</p>
+        </div>
+
+        <div class="flex-1 bg-white rounded-2xl shadow-xl border border-blue-100 flex flex-col overflow-hidden min-h-0">
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-tech-blue text-white flex items-center justify-center flex-shrink-0 shadow-md">
+                        <i class="fas fa-robot text-lg"></i>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow border border-gray-100 text-gray-700 leading-relaxed max-w-[80%]">
+                        您好！我是"桦艺 AI 助手"，已深度学习桦树皮画的历史、工艺、材料与传承人知识。<br>
+                        您可以试着问我：<span class="text-tech-blue">"制作工艺有哪些？"</span>、<span class="text-tech-blue">"它有多少年历史？"</span>、<span class="text-tech-blue">"传承人是谁？"</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chat-suggest" class="px-4 pt-3 bg-white flex flex-wrap gap-2 text-xs">
+                <button class="suggest-btn border border-gray-200 rounded-full px-3 py-1.5 text-gray-500 hover:border-tech-blue hover:text-tech-blue transition" onclick="askSuggest(this)">桦树皮画的制作工艺？</button>
+                <button class="suggest-btn border border-gray-200 rounded-full px-3 py-1.5 text-gray-500 hover:border-tech-blue hover:text-tech-blue transition" onclick="askSuggest(this)">它有多少年历史？</button>
+                <button class="suggest-btn border border-gray-200 rounded-full px-3 py-1.5 text-gray-500 hover:border-tech-blue hover:text-tech-blue transition" onclick="askSuggest(this)">采剥树皮会伤害树木吗？</button>
+                <button class="suggest-btn border border-gray-200 rounded-full px-3 py-1.5 text-gray-500 hover:border-tech-blue hover:text-tech-blue transition" onclick="askSuggest(this)">传承人付占祥是谁？</button>
+            </div>
+
+            <div class="p-4 bg-white border-t border-gray-100">
+                <div class="relative flex items-center">
+                    <input type="text" id="chat-input" placeholder="请在此输入您的问题..."
+                           class="w-full bg-gray-100 border-none rounded-full py-4 px-6 pr-16 focus:outline-none focus:ring-2 focus:ring-tech-blue transition text-gray-700"
+                           onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-tech-blue text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition shadow-md">
+                        <i class="fas fa-paper-plane text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ai.js') }}"></script>
+{% endblock %}

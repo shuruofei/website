@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}项目与留言{% endblock %}
+
+{% block content %}
+<div class="bg-birch-dark text-birch-light min-h-screen pt-14 pb-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="text-center mb-12 pt-8 scroll-bounce">
+            <i class="fas fa-flag text-5xl text-amber-500 mb-6"></i>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 tracking-widest">项目矩阵与愿景</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mt-8" id="stats-grid">
+                <div class="bg-white/10 backdrop-blur rounded-2xl p-5 border border-white/10">
+                    <p class="text-3xl font-extrabold text-amber-400 stats-num" data-key="users">-</p>
+                    <p class="text-xs opacity-70 mt-1">注册用户</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-2xl p-5 border border-white/10">
+                    <p class="text-3xl font-extrabold text-amber-400 stats-num" data-key="materials">-</p>
+                    <p class="text-xs opacity-70 mt-1">共创素材</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-2xl p-5 border border-white/10">
+                    <p class="text-3xl font-extrabold text-amber-400 stats-num" data-key="comments">-</p>
+                    <p class="text-xs opacity-70 mt-1">留言互动</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-2xl p-5 border border-white/10">
+                    <p class="text-3xl font-extrabold text-amber-400 stats-num" data-key="artworks">-</p>
+                    <p class="text-xs opacity-70 mt-1">数字馆藏画作</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white/10 backdrop-blur-md rounded-3xl p-10 md:p-14 mb-12 text-left border border-white/20 shadow-2xl scroll-bounce">
+            <h3 class="text-3xl font-bold text-amber-400 mb-6 border-b border-white/20 pb-4">项目背景</h3>
+            <p class="text-birch-DEFAULT leading-relaxed mb-10 text-lg">
+                本项目为 <strong class="text-white text-2xl">2026 年大学生创新创业训练计划项目</strong>。
+                面对中国北方少数民族独有的国家级非物质文化遗产——桦树皮画技艺逐渐失传的困境，
+                我们团队立志通过前沿数字技术（WebAR、AI 大模型问答、UGC 共创素材库），
+                为其打造一个多维度的数字生态平台，实现"见人见物见生活"的活态传承。
+            </p>
+            <h3 class="text-3xl font-bold text-amber-400 mb-6 border-b border-white/20 pb-4">联系团队</h3>
+            <div class="flex flex-col md:flex-row gap-8 text-lg">
+                <p class="text-birch-DEFAULT flex items-center"><i class="fas fa-envelope mr-3 text-white text-2xl"></i> hrbust_huashupihua@qq.com</p>
+                <p class="text-birch-DEFAULT flex items-center"><i class="fas fa-map-marker-alt mr-3 text-white text-2xl"></i> 中国 · 哈尔滨理工大学 创新创业中心</p>
+            </div>
+        </div>
+
+        <!-- 留言墙 -->
+        <div class="bg-white rounded-3xl p-8 md:p-10 shadow-2xl scroll-bounce">
+            <div class="flex items-center gap-3 mb-2">
+                <i class="fas fa-comments text-3xl text-tech-blue"></i>
+                <h3 class="text-2xl font-bold text-birch-dark">全站留言墙</h3>
+            </div>
+            <p class="text-gray-500 text-sm mb-2">留下你对桦树皮画、对非遗传承的想法——每一条留言都会被认真阅读。</p>
+            <div id="wall-comments" class="text-gray-800"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/comments.js') }}"></script>
+<script>
+(async () => {
+    const data = await (await fetch('/api/stats')).json();
+    if (data.ok) {
+        document.querySelectorAll('.stats-num').forEach(el => {
+            el.innerText = data.stats[el.dataset.key] ?? 0;
+        });
+    }
+})();
+mountComments(document.getElementById('wall-comments'), 'wall');
+</script>
+{% endblock %}
