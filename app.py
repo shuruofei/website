@@ -548,5 +548,27 @@ def inject_globals():
             "artworks": ARTWORKS}
 
 
+# ---------- 错误页 ----------
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("error.html", code=404,
+                           title="页面走丢了",
+                           message="这个页面不存在或已被移动——也许它正藏在白桦林深处。"), 404
+
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template("error.html", code=500,
+                           title="服务器开小差",
+                           message="内部错误，请稍后重试；本地演示时重启 app.py 即可恢复。"), 500
+
+
+@app.errorhandler(413)
+def too_large(e):
+    return render_template("error.html", code=413,
+                           title="文件太大啦",
+                           message="上传的图片超过 5MB 限制，请压缩后再试。"), 413
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

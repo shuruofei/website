@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} {{ title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-birch-light/60 to-tech-light/40 flex items-center justify-center px-4 py-24">
+    <div class="text-center max-w-md fade-up">
+        <div class="text-8xl font-extrabold text-birch-dark/20 mb-2">{{ code }}</div>
+        <h2 class="text-3xl font-bold text-birch-dark mb-4">{{ title }}</h2>
+        <p class="text-gray-500 mb-8">{{ message }}</p>
+        <div class="flex gap-3 justify-center">
+            <a href="/" class="inline-flex items-center gap-2 bg-birch-dark text-birch-light px-6 py-3 rounded-xl font-bold hover:bg-birch-accent transition shadow-md">
+                <i class="fas fa-home"></i> 返回首页
+            </a>
+            <a href="javascript:history.back()" class="inline-flex items-center gap-2 border border-gray-200 text-gray-600 px-6 py-3 rounded-xl font-bold hover:border-birch-accent hover:text-birch-accent transition">
+                <i class="fas fa-arrow-left"></i> 返回上页
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
