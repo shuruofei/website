@@ -8,6 +8,8 @@
     <title>{% block title %}桦艺新生{% endblock %} - 桦树皮画数字体验平台</title>
     <script src="{{ url_for('static', filename='vendor/tailwind.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/lxgw-wenkai-lite/lxgwwenkailite-regular.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/lxgw-wenkai-lite/lxgwwenkailite-bold.css') }}">
     <script>
         tailwind.config = {
             theme: { extend: { colors: {
@@ -28,22 +30,35 @@
                 <span class="font-extrabold text-lg text-birch-dark tracking-wider hidden sm:inline">桦艺新生</span>
             </a>
 
-            <div class="hidden lg:flex items-center gap-1 text-sm font-medium">
-                {% set links = [
-                    ('/', '首页', 'index'),
+            {% set nav_groups = [
+                ('了解', [
                     ('/timeline', '时间轴', 'timeline'),
                     ('/craft', '工艺', 'craft'),
                     ('/inheritors', '传承人', 'inheritors'),
                     ('/culture', '民族图谱', 'culture'),
                     ('/gallery', '展馆', 'gallery'),
+                ]),
+                ('体验', [
                     ('/ar', 'AR试贴', 'ar'),
                     ('/ai', 'AI问答', 'ai'),
                     ('/quiz', '问答挑战', 'quiz'),
+                    ('/create', '拼贴创作', 'create'),
+                ]),
+                ('共创', [
                     ('/material', '素材库', 'material'),
                     ('/about', '关于·留言', 'about'),
-                ] %}
-                {% for href, label, ep in links %}
-                <a href="{{ href }}" class="px-3 py-2 rounded-lg transition hover:bg-birch-light hover:text-birch-dark {% if request.endpoint == ep %}text-birch-dark bg-birch-light font-bold{% else %}text-gray-600{% endif %}">{{ label }}</a>
+                ]),
+            ] %}
+
+            <div class="hidden lg:flex items-center gap-1.5 text-sm font-medium">
+                <a href="/" class="px-2.5 py-2 rounded-lg transition hover:bg-birch-light hover:text-birch-dark {% if request.endpoint == 'index' %}text-birch-dark bg-birch-light font-bold{% else %}text-gray-600{% endif %}">首页</a>
+                {% for glabel, items in nav_groups %}
+                <div class="flex items-center gap-1 pl-2.5 ml-1.5 border-l border-birch/40">
+                    <span class="nav-group-label font-display">{{ glabel }}</span>
+                    {% for href, label, ep in items %}
+                    <a href="{{ href }}" class="px-2.5 py-2 rounded-lg transition hover:bg-birch-light hover:text-birch-dark {% if request.endpoint == ep %}text-birch-dark bg-birch-light font-bold{% else %}text-gray-600{% endif %}">{{ label }}</a>
+                    {% endfor %}
+                </div>
                 {% endfor %}
             </div>
 
@@ -66,8 +81,14 @@
 
         <div id="nav-mobile" class="hidden lg:hidden border-t border-gray-100 bg-white max-h-[70vh] overflow-y-auto">
             <div class="px-4 py-3 grid grid-cols-2 gap-1 text-sm font-medium">
-                {% for href, label, ep in links %}
+                <a href="/" class="col-span-2 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-birch-light">
+                    <i class="fas fa-home mr-2 text-birch-accent"></i>首页
+                </a>
+                {% for glabel, items in nav_groups %}
+                <div class="col-span-2 px-2 pt-2 pb-1 text-xs font-bold text-birch-accent/80 tracking-widest">{{ glabel }}</div>
+                {% for href, label, ep in items %}
                 <a href="{{ href }}" class="px-3 py-2.5 rounded-lg text-gray-700 hover:bg-birch-light">{{ label }}</a>
+                {% endfor %}
                 {% endfor %}
             </div>
             <div class="px-4 pb-4 flex items-center gap-3 text-sm border-t border-gray-100 pt-3">
@@ -103,17 +124,18 @@
                     <a href="/inheritors" class="hover:text-white py-0.5">传承人故事</a>
                     <a href="/culture" class="hover:text-white py-0.5">民族图谱</a>
                     <a href="/gallery" class="hover:text-white py-0.5">数字展馆</a>
+                    <a href="/create" class="hover:text-white py-0.5">拼贴创作</a>
                     <a href="/material" class="hover:text-white py-0.5">素材共创库</a>
                 </div>
             </div>
             <div>
                 <h4 class="text-birch-light font-bold mb-3">联系我们</h4>
-                <p class="py-0.5"><i class="fas fa-envelope mr-2"></i>hrbust_huashupihua@qq.com</p>
-                <p class="py-0.5"><i class="fas fa-map-marker-alt mr-2"></i>哈尔滨理工大学 · 创新创业中心</p>
+                <p class="py-0.5"><i class="fas fa-envelope mr-2"></i>具体邮箱</p>
+                <p class="py-0.5"><i class="fas fa-map-marker-alt mr-2"></i>具体地址</p>
                 <p class="py-0.5"><i class="fas fa-flag mr-2"></i>2026 大学生创新创业训练计划项目</p>
             </div>
         </div>
-        <p class="text-center text-xs text-birch-light/40 pb-6">© {{ year }} 桦艺新生大创团队 | 桦树皮画数字保护中心 · 保留所有权利</p>
+        <p class="text-center text-xs text-birch-light/40 pb-6">© {{ year }} 团队名称 | 桦树皮画数字保护中心 · 保留所有权利</p>
     </footer>
 
     <div id="scroll-to-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})"
@@ -126,6 +148,7 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/terms.js') }}"></script>
     <script>window.CURRENT_USER = {{ (user or none)|tojson }};</script>
     {% block scripts %}{% endblock %}
 </body>

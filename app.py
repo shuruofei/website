@@ -45,17 +45,29 @@ ZHIPU_MODELS = ["glm-4.7-flash", "glm-4-flash-250414"]
 # ---------- 展馆作品与素材常量（图片本地化映射） ----------
 ARTWORKS = [
     {"slug": "qimalieshou",  "title": "骑马狩猎", "file": "骑马狩猎.jpg",
-     "desc": "游猎民族的经典叙事主题：猎手纵马穿行于白桦林间，再现山林生活的原始张力。"},
+     "desc": "游猎民族的经典叙事主题：猎手纵马穿行于白桦林间，再现山林生活的原始张力。",
+     "technique": "剪贴 · 烙烫", "theme": "游猎叙事",
+     "story": "这是一幅典型的游猎叙事作品：猎手纵马穿行于白桦林间，马蹄踏碎林间寂静。匠人以深浅两色树皮剪出猎手、骏马与林层的远近关系，再用烙铁烫出鬃毛与枝影的细部。在鄂伦春人的记忆里，马匹与猎枪、桦皮船并列，是山林生活最重要的伙伴——这类题材因此成为桦皮画中最经久不衰的母题，堪称一部可以挂在墙上的\u201c游猎史诗\u201d。"},
     {"slug": "hualinlangying", "title": "桦林狼影", "file": "桦林狼影.png",
-     "desc": "利用深色树皮剪出狼的轮廓，与浅色桦林底形成强烈对比，尽显\"相皮\"构图的巧思。"},
+     "desc": "利用深色树皮剪出狼的轮廓，与浅色桦林底形成强烈对比，尽显\"相皮\"构图的巧思。",
+     "technique": "剪影拼贴", "theme": "森林生灵",
+     "story": "\u201c相皮\u201d的教科书式示范：匠人没有绘制轮廓，而是从一堆树皮中挑出色彩最深的一张，顺势剪出狼回首的剪影，再以浅色桦皮拼出背景桦林。深与浅的天然色差让狼影从林间\u201c浮\u201d出，仿佛月夜下的一次对视。这种依循材料本身、\u201c看皮定图\u201d的构思方式，正是桦皮画区别于一般剪贴画的灵魂所在。"},
     {"slug": "shilubuluo",   "title": "使鹿部落", "file": "使鹿部落.png",
-     "desc": "描绘鄂温克使鹿部落在兴安岭中的驯鹿生活，是北方森林民族的活态记忆。"},
+     "desc": "描绘鄂温克使鹿部落在兴安岭中的驯鹿生活，是北方森林民族的活态记忆。",
+     "technique": "拼贴 · 烙烫", "theme": "使鹿文化",
+     "story": "画面定格了大兴安岭使鹿部落的一天：驯鹿驮着桦皮篓穿行林间，撮罗子升起炊烟。鄂温克使鹿部落是中国最后的驯鹿族群，迁徙途中桦皮箱篓承载全部家当，\u201c住在大山林中的人们\u201d以此与森林签订古老的契约。匠人以拼贴铺陈林层与鹿群，烙烫勾出鹿角与炊烟的细节，让画面既有工艺的层次，也有部落的呼吸。"},
     {"slug": "guxiangbaihua", "title": "故乡白桦", "file": "故乡白桦.png",
-     "desc": "以树皮本色层层拼贴出白桦林的四季光影，质朴中见乡愁。"},
+     "desc": "以树皮本色层层拼贴出白桦林的四季光影，质朴中见乡愁。",
+     "technique": "本色拼贴", "theme": "白桦林四季",
+     "story": "最\u201c朴素\u201d也最难的一幅：全程不用烙烫，仅以桦皮本色分层拼贴——浅色为春，金黄为秋，深褐作冬的枝影，四季在同一片白桦林里流转。对北方民族而言，白桦是\u201c神树\u201d，剥皮前要祝祷致意、取用有度。这幅作品把对故乡桦林的凝视，做成了可以触摸的年轮。"},
     {"slug": "linshenjianlu", "title": "林深见鹿", "file": "林深见鹿.jpg",
-     "desc": "烙烫技法塑造的林间驯鹿，光影过渡细腻，体现\"以火为墨\"的独特美感。"},
+     "desc": "烙烫技法塑造的林间驯鹿，光影过渡细腻，体现\"以火为墨\"的独特美感。",
+     "technique": "烙烫", "theme": "森林生灵",
+     "story": "\u201c以火为墨\u201d的代表：匠人以加热的烙铁代笔，在桦皮上烫出深浅不一的焦痕——温度高则色深，运笔缓则影浓。林间的驯鹿通体由烙痕塑形，明暗过渡细腻如素描。烙烫不可修改，一笔烫错整张皮即废，因此每一幅烙烫作品都是不可复制的孤品，最能考验匠人\u201c以火为墨\u201d的定力。"},
     {"slug": "beifangshenghuo", "title": "北方生活", "file": "北方生活.jpg",
-     "desc": "记录北方民族炊烟、狩猎、迁徙的日常图景，堪称一部\"视觉史书\"。"},
+     "desc": "记录北方民族炊烟、狩猎、迁徙的日常图景，堪称一部\"视觉史书\"。",
+     "technique": "拼贴 · 烙烫", "theme": "民俗生活",
+     "story": "一幅\u201c视觉史书\u201d式的群像：炊烟、狩猎、迁徙、劳作在同一画面铺开。桦皮画自古承担记录功能——在文字之外，森林民族把生活图景刻在桦皮器物上，一传千年。这幅作品以拼贴分场景、以烙烫提细节，观者如翻开一页泛黄的北方民俗志。"},
 ]
 
 TEXTURE_MATERIALS = [
@@ -161,6 +173,15 @@ def gallery():
     return render_template("gallery.html", artworks=ARTWORKS)
 
 
+@app.route("/gallery/<slug>")
+def artwork_detail(slug):
+    a = next((x for x in ARTWORKS if x["slug"] == slug), None)
+    if not a:
+        abort(404)
+    related = [x for x in ARTWORKS if x["slug"] != slug][:3]
+    return render_template("artwork.html", artwork=a, related=related)
+
+
 @app.route("/timeline")
 def timeline():
     return render_template("timeline.html")
@@ -199,6 +220,11 @@ def ai():
 @app.route("/material")
 def material():
     return render_template("material.html", textures=TEXTURE_MATERIALS)
+
+
+@app.route("/create")
+def create():
+    return render_template("create.html", textures=TEXTURE_MATERIALS, ar_url=AR_URL)
 
 
 @app.route("/about")

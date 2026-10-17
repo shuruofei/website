@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}拼贴创作{% endblock %}
+
+{% block content %}
+<div class="bg-birch-light bg-texture min-h-screen pt-14 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 scroll-bounce">
+            <h2 class="font-display text-4xl md:text-5xl font-bold text-birch-dark mb-4">
+                <i class="fas fa-shapes mr-3 text-amber-700"></i>我是桦皮画师 · 拼贴创作
+            </h2>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+                像非遗匠人一样"因材施艺"：挑选天然桦皮纹理，拖到画布上拼贴出你的作品，
+                完成后可下载装裱、投稿素材库，或带到 AR 试贴间"挂"上自家墙面。
+            </p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-xl border border-birch overflow-hidden scroll-bounce">
+            <!-- 顶部工具条 -->
+            <div class="border-b border-gray-100 px-4 py-3 flex flex-wrap items-center gap-2 text-sm">
+                <span class="font-bold text-birch-dark mr-1"><i class="fas fa-compass-drafting mr-1"></i>底稿</span>
+                <div id="guide-btns" class="flex flex-wrap gap-1">
+                    <button data-guide="deer" class="guide-btn px-3 py-1.5 rounded-full border">驯鹿</button>
+                    <button data-guide="mountain" class="guide-btn px-3 py-1.5 rounded-full border">群山</button>
+                    <button data-guide="birch" class="guide-btn px-3 py-1.5 rounded-full border">白桦林</button>
+                    <button data-guide="none" class="guide-btn px-3 py-1.5 rounded-full border">自由创作</button>
+                </div>
+                <button id="guide-toggle" class="px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-eye mr-1"></i>隐藏底稿
+                </button>
+                <div class="flex-1"></div>
+                <button id="btn-undo" class="px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 transition disabled:opacity-40" disabled>
+                    <i class="fas fa-rotate-left mr-1"></i>撤销
+                </button>
+                <button id="btn-clear" class="px-3 py-1.5 rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 transition">
+                    <i class="fas fa-trash-can mr-1"></i>清空
+                </button>
+            </div>
+
+            <div class="flex flex-col lg:flex-row">
+                <!-- 桦皮纹理素材架 -->
+                <div class="lg:w-52 border-b lg:border-b-0 lg:border-r border-gray-100 p-4">
+                    <h4 class="text-sm font-bold text-birch-dark mb-3">
+                        <i class="fas fa-layer-group mr-1 text-amber-700"></i>桦皮纹理
+                        <span class="text-xs text-gray-400 font-normal">点击或拖入画布</span>
+                    </h4>
+                    <div id="palette" class="flex lg:flex-row flex-wrap lg:grid lg:grid-cols-3 gap-2 overflow-x-auto no-scrollbar pb-1">
+                        {% for t in textures %}
+                        <button class="palette-item group relative rounded-xl overflow-hidden border-2 border-birch hover:border-birch-dark transition flex-shrink-0 w-20 h-20 lg:w-auto lg:h-auto"
+                                data-src="{{ url_for('serve_image', filename=t) }}" title="拖入画布">
+                            <img src="{{ url_for('serve_image', filename=t) }}" draggable="false"
+                                 class="w-full h-full object-cover pointer-events-none" loading="lazy" alt="桦皮纹理{{ loop.index }}">
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <p class="hidden lg:block text-xs text-gray-400 mt-3 leading-relaxed">同一种树皮也有深浅之别——多叠几层，画面才有远近层次。</p>
+                </div>
+
+                <!-- 画布区 -->
+                <div class="flex-1 p-4 lg:p-6">
+                    <div id="stage-wrap" class="relative mx-auto w-full max-w-3xl select-none" style="aspect-ratio:4/3;">
+                        <canvas id="guide-canvas" class="absolute inset-0 w-full h-full rounded-xl pointer-events-none"></canvas>
+                        <canvas id="main-canvas" class="absolute inset-0 w-full h-full rounded-xl shadow-inner cursor-default" style="touch-action:none;"></canvas>
+                        <div id="stage-empty" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 pointer-events-none">
+                            <i class="fas fa-hand-pointer text-4xl mb-3 opacity-40"></i>
+                            <p class="text-sm">从左侧挑选桦皮纹理，拖到这里开始创作</p>
+                        </div>
+                    </div>
+
+                    <!-- 选中图层操作条 -->
+                    <div id="piece-bar" class="mx-auto w-full max-w-3xl mt-4 flex flex-wrap items-center gap-2 text-sm bg-birch-light rounded-2xl px-4 py-3 border border-birch transition-opacity opacity-40 pointer-events-none">
+                        <span class="text-xs font-bold text-birch-dark"><i class="fas fa-wand-magic-sparkles mr-1"></i>编辑选中桦皮</span>
+                        <div id="edit-actions" class="flex flex-wrap items-center gap-2">
+                            <button data-act="smaller" class="pbtn" title="缩小"><i class="fas fa-minus"></i></button>
+                            <button data-act="bigger" class="pbtn" title="放大"><i class="fas fa-plus"></i></button>
+                            <button data-act="rotl" class="pbtn" title="左旋 15°"><i class="fas fa-rotate-left"></i></button>
+                            <button data-act="rotr" class="pbtn" title="右旋 15°"><i class="fas fa-rotate-right"></i></button>
+                            <button data-act="flip" class="pbtn" title="镜像翻转"><i class="fas fa-right-left"></i></button>
+                            <button data-act="crop" class="pbtn" title="裁剪纹理"><i class="fas fa-crop-simple"></i></button>
+                            <button data-act="up" class="pbtn" title="上移一层"><i class="fas fa-arrow-up"></i></button>
+                            <button data-act="down" class="pbtn" title="下移一层"><i class="fas fa-arrow-down"></i></button>
+                            <button data-act="del" class="pbtn pbtn-danger" title="删除"><i class="fas fa-trash-can"></i></button>
+                            <span class="text-xs text-gray-400">拖边点拉伸 · 滚轮缩放 · 拖动移动</span>
+                        </div>
+                        <div id="crop-actions" class="hidden items-center gap-2 flex-wrap w-full">
+                            <span class="text-xs font-bold text-birch-dark"><i class="fas fa-crop-simple mr-1"></i>框选要保留的部分</span>
+                            <span class="text-xs text-gray-400">拖角/边调整 · 拖中间移动 · 点画布空白取消 · Enter 确认</span>
+                            <div class="flex-1"></div>
+                            <button id="crop-cancel" class="px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 transition">取消</button>
+                            <button id="crop-ok" class="px-5 py-2 rounded-full bg-birch-dark text-white font-bold hover:bg-birch-accent transition"><i class="fas fa-check mr-1"></i>确认裁剪</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部输出区 -->
+            <div class="border-t border-gray-100 px-4 py-4 flex flex-col md:flex-row md:items-center gap-3">
+                <div class="flex items-center gap-2 flex-1 min-w-0">
+                    <input id="work-title" type="text" maxlength="30" placeholder="给作品起个名字（投稿时显示）"
+                           class="flex-1 min-w-0 px-4 py-2.5 rounded-full border border-gray-200 text-sm focus:outline-none focus:border-birch-accent">
+                    <span id="piece-count" class="text-xs text-gray-400 whitespace-nowrap">0 块桦皮</span>
+                </div>
+                <div class="flex flex-wrap gap-2 justify-end">
+                    <button id="btn-download" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-birch-dark text-white text-sm font-bold hover:bg-birch-accent transition">
+                        <i class="fas fa-download"></i>下载装裱作品
+                    </button>
+                    <button id="btn-ar" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-600 text-white text-sm font-bold hover:bg-purple-700 transition">
+                        <i class="fas fa-vr-cardboard"></i>保存并去 AR 试贴
+                    </button>
+                    <button id="btn-submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition">
+                        <i class="fas fa-cloud-arrow-up"></i>投稿素材库
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 scroll-bounce">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-birch">
+                <h4 class="font-bold text-birch-dark mb-2"><i class="fas fa-1 mr-2 text-amber-700"></i>相皮立意</h4>
+                <p class="text-sm text-gray-600 leading-relaxed">先选一张底稿，再观察每块纹理的结节与深浅——真实匠人正是顺着树皮的天生纹样"看皮定图"。</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-birch">
+                <h4 class="font-bold text-birch-dark mb-2"><i class="fas fa-2 mr-2 text-amber-700"></i>层层拼贴</h4>
+                <p class="text-sm text-gray-600 leading-relaxed">拖动摆放、拉伸变形、滚轮缩放、旋转翻转、调整层级，用几块桦皮叠出远近与光影。</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-birch">
+                <h4 class="font-bold text-birch-dark mb-2"><i class="fas fa-3 mr-2 text-amber-700"></i>装裱留念</h4>
+                <p class="text-sm text-gray-600 leading-relaxed">一键生成带画框与"桦"字印章的装裱图，下载收藏、投稿共创库，或去 AR 间贴上自家墙面。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="create-toast" class="fixed left-1/2 -translate-x-1/2 bottom-8 z-[200] hidden bg-birch-dark text-white text-sm px-5 py-3 rounded-full shadow-xl max-w-[90vw] text-center"></div>
+
+<style>
+.pbtn {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: #fff; border: 1px solid #e8dfce; color: #5e4229;
+    transition: all .15s;
+}
+.pbtn:hover { background: #5e4229; color: #f9f3e9; }
+.pbtn-danger { color: #e11d48; border-color: #fecdd3; }
+.pbtn-danger:hover { background: #e11d48; color: #fff; }
+.guide-btn { transition: all .15s; }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/create.js') }}"></script>
+<script>window.AR_URL = {{ ar_url|tojson }};</script>
+{% endblock %}

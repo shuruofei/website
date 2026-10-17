@@ -7,20 +7,86 @@ html { scroll-behavior: smooth; font-family: 'Microsoft YaHei', sans-serif; }
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8dfce' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
+/* ---------- 展示字体（霞鹜文楷本地分包优先，系统楷体后备，移动端统一） ---------- */
+.font-display { font-family: 'LXGW WenKai Lite', 'STKaiti', 'KaiTi', 'Kaiti SC', 'KaiTiTi', 'Noto Serif SC', 'SimSun', serif; }
+
+/* ---------- 作品详情页：悬停放大镜 ---------- */
+.zoom-lens {
+    display: none;
+    position: absolute;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 24px rgba(94,66,41,.35), inset 0 0 0 1px rgba(94,66,41,.25);
+    background-repeat: no-repeat;
+    background-color: #f9f3e9;
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* ---------- 导航分组标签：楷体竖排"书脊"式 ---------- */
+.nav-group-label {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: .35em;
+    color: rgba(122, 91, 60, .55);
+    padding: 3px 0 3px 1px;
+    user-select: none;
+}
+
+/* ---------- 首页 Hero：桦皮质感 ---------- */
+.hero-birch {
+    background:
+        radial-gradient(ellipse 62% 42% at 50% 10%, #fffdf6 0%, rgba(255,253,246,0) 70%),
+        linear-gradient(180deg, #faf5ea 0%, #f4ecdc 55%, #ecdfc6 100%);
+}
+.hero-birch::before {   /* 桦皮天然横向层纹 */
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(184deg, rgba(122,91,60,.05) 0 2px, transparent 2px 34px),
+        repeating-linear-gradient(1.5deg, rgba(122,91,60,.045) 0 1px, transparent 1px 21px),
+        repeating-linear-gradient(179deg, rgba(94,66,41,.055) 0 6px, transparent 6px 118px);
+}
+.hero-birch-trees { position: absolute; bottom: 0; left: 0; width: 100%; height: 190px; pointer-events: none; }
+
+/* 主标题旁的"桦"字印章，呼应拼贴装裱导出；字用 SVG central 基线真正居中 */
+.hero-seal {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.4rem; height: 2.4rem; padding: 2px;
+    background: #b03a2e; color: #fdf6ec;
+    border-radius: .45rem;
+    transform: rotate(-6deg) translateY(-.9rem);
+    box-shadow: 0 2px 8px rgba(176,58,46,.35);
+}
+.hero-seal svg { width: 100%; height: 100%; display: block; }
+.hero-seal svg text { font-weight: 700; fill: currentColor; }
+
 /* ---------- 3D 魔方 ---------- */
 .scene { width: 200px; height: 200px; perspective: 800px; margin: 2rem auto; position: relative; z-index: 10; }
 .cube { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transform: rotateX(-15deg) rotateY(20deg); cursor: grab; touch-action: none; }
 .cube:active { cursor: grabbing; }
 .face {
     position: absolute; width: 200px; height: 200px;
-    background: rgba(255,255,255,0.95);
-    border: 2px solid #0284c7; box-shadow: 0 0 15px rgba(2,132,199,0.15);
+    background:
+        repeating-linear-gradient(2deg, rgba(122,91,60,.06) 0 1px, transparent 1px 14px),
+        rgba(253,250,242,.95);
+    border: 2px solid #7a5b3c; box-shadow: 0 0 15px rgba(94,66,41,.18);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 1.25rem; font-weight: bold; color: #0284c7;
+    font-size: 1.25rem; font-weight: bold; color: #5e4229;
     transition: background .3s, box-shadow .3s; overflow: hidden;
     -webkit-user-drag: none; cursor: pointer;
 }
-.face:hover { background: #f0f9ff; box-shadow: 0 0 30px rgba(2,132,199,0.4); }
+.face:hover {
+    background:
+        repeating-linear-gradient(2deg, rgba(122,91,60,.08) 0 1px, transparent 1px 14px),
+        #f3ead8;
+    box-shadow: 0 0 30px rgba(94,66,41,.4);
+}
 .front  { transform: rotateY(  0deg) translateZ(100px); }
 .right  { transform: rotateY( 90deg) translateZ(100px); }
 .back   { transform: rotateY(180deg) translateZ(100px); }
@@ -41,6 +107,47 @@ html { scroll-behavior: smooth; font-family: 'Microsoft YaHei', sans-serif; }
     background-image: linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px);
     background-size: 20px 20px;
 }
+
+/* ---------- 术语小百科 ---------- */
+.term-chip {
+    border-bottom: 2px dashed rgba(122, 91, 60, .65);
+    cursor: help;
+    transition: background .2s;
+    -webkit-tap-highlight-color: transparent;
+}
+.term-chip:hover, .term-chip:focus { background: rgba(232, 223, 206, .6); outline: none; }
+
+.term-popover {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    max-width: 320px;
+    padding: 12px 16px;
+    background: #fffdf8;
+    border: 1px solid #e8dfce;
+    border-left: 4px solid #7a5b3c;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(94, 66, 41, .18);
+    font-size: 13px;
+    line-height: 1.7;
+    color: #4b5563;
+    pointer-events: none;
+    animation: term-pop .18s ease-out;
+}
+@keyframes term-pop {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.term-popover-title {
+    font-weight: bold;
+    color: #5e4229;
+    font-size: 14px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.term-popover-title i { color: #b45309; font-size: 12px; }
 
 /* ---------- 时间轴 ---------- */
 .timeline-line::before {
